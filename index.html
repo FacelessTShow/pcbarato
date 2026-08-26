@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PCBarato — Compare preços de GPUs e CPUs nas lojas do Brasil</title>
+<meta name="description" content="Compare preços de placas de vídeo e processadores na Kabum, Terabyte, Pichau, Mercado Livre, Amazon e Shopee. Histórico de preços, alerta de oferta boa e assistente IA de upgrade.">
+<style>
+  :root{--bg:#0b0f14;--card:#121821;--border:#223042;--text:#d8e1ec;--dim:#7d8da1;--accent:#4f8cff;--green:#3ecf6e}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,Arial,sans-serif;line-height:1.6}
+  .wrap{max-width:960px;margin:0 auto;padding:24px}
+  header{padding:48px 0 32px;text-align:center}
+  h1{font-size:clamp(28px,5vw,44px);background:linear-gradient(90deg,#4f8cff,#9b6bff);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .tag{color:var(--dim);font-size:18px;margin-top:12px}
+  .stores{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin:28px 0}
+  .store{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:6px 16px;font-size:14px;color:var(--dim)}
+  section{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:24px;margin-bottom:18px}
+  h2{font-size:20px;margin-bottom:10px}
+  p{color:#b9c6d6}
+  ul{list-style:none;margin-top:10px}
+  li{padding:6px 0 6px 26px;position:relative;color:#b9c6d6}
+  li::before{content:"✔";position:absolute;left:0;color:var(--green)}
+  .ai{border-color:#3a2f66;background:linear-gradient(135deg,#141225,#121821)}
+  .demo{background:#0e1420;border:1px solid var(--border);border-radius:10px;padding:14px;margin-top:14px;font-size:14px}
+  .demo b{color:#9fc4ff}
+  .demo .you{color:#8be28b}
+  footer{text-align:center;color:var(--dim);font-size:13px;padding:32px 0}
+  a{color:var(--accent);text-decoration:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>PCBarato ⚡</h1>
+    <div class="tag">Todas as lojas. Um só preço certo. E uma IA que diz o que vale a pena upgradar.</div>
+    <div class="stores">
+      <span class="store">Kabum</span><span class="store">Terabyte</span><span class="store">Pichau</span>
+      <span class="store">Mercado Livre</span><span class="store">Amazon</span><span class="store">Shopee</span>
+    </div>
+  </header>
+
+  <section>
+    <h2>🔎 Busque uma peça, veja tudo</h2>
+    <p>Digite "RTX 5060" e receba as ofertas de todas as grandes lojas em uma lista ordenada por preço real (à vista), com histórico dos últimos 30 dias.</p>
+    <ul>
+      <li>Selo automático "menor preço histórico" ou "caro demais, espera"</li>
+      <li>Na Shopee: selo de confiança do vendedor — protegemos você de anúncio golpe</li>
+      <li>Cupons e promoções ativos aparecem junto da oferta</li>
+    </ul>
+  </section>
+
+  <section class="ai">
+    <h2>🤖 Assistente IA de Upgrade</h2>
+    <p>Descreva seu setup atual. A IA identifica o gargalo, sugere o upgrade com melhor custo-benefício e mostra onde está mais barato agora:</p>
+    <div class="demo">
+      <p><span class="you">Você:</span> i5 9400F, GTX 1660, 16GB, quero rodar jogos em 1440p</p>
+      <p><b>Cyber IA:</b> Seu gargalo é a GPU. Upgrading para RTX 5060 (~R$ 2.450 na Kabum, menor preço em 60 dias) dá +120% de FPS em 1440p. Seu i5 ainda aguenta, mas planeje trocar placa-mãe+CPU ano que vem. Quer ver ofertas?</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>📲 Instala como app</h2>
+    <p>Sem loja de aplicativos: no Android, abra o site e toque em "Adicionar à tela inicial". Pronto — ícone igual app nativo, de graça.</p>
+  </section>
+
+  <section>
+    <h2>🚧 Em construção</h2>
+    <p>Estamos coletando preços e finalizando a primeira versão. Quer aviso quando lançar? Fale com nosso bot no Telegram:</p>
+    <p style="margin-top:10px"><a href="https://t.me/Landus3558_bot">@Landus3558_bot → mande /pcbarato</a></p>
+  </section>
+
+  <footer>PCBarato © 2026 · Preços atualizados automaticamente · Alguns links são de afiliados — não custa nada a mais para você e mantém o projeto vivo 💙</footer>
+</div>
+</body>
+</html>
