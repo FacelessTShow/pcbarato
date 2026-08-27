@@ -12,27 +12,10 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: "campo 'message' obrigatório" });
   }
 
-  // ofertas reais geradas pelos scrapers (atualizadas pelo cron)
+  // ofertas embutidas (gerado por scrapers/build_site_data.py)
   let ofertas = [];
-  try {
-    const mod = await import("../ofertas.js-data.json", { with: { type: "json" } }).catch(() => null);
-    if (mod) ofertas = mod.default.offers || [];
-  } catch {}
-  if (!ofertas.length) {
-    try {
-      const fs = await import("fs");
-      const path = await import("path");
-      for (const p of [
-        path.join(process.cwd(), "ofertas-data.json"),
-        path.join(process.cwd(), "api", "ofertas-data.json"),
-      ]) {
-        try {
-          ofertas = JSON.parse(fs.readFileSync(p, "utf8")).offers || [];
-          if (ofertas.length) break;
-        } catch {}
-      }
-    } catch {}
-  }
+  try { ofertas = (await import("./ofertas-embed.mjs")).OFFERS || []; } catch {}
+
 
   const top = ofertas.slice(0, 60)
     .map(o => `- ${o.s} | R$ ${o.p.toFixed(2).replace(".", ",")} | ${o.t}`)
