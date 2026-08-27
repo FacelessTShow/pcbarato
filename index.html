@@ -43,12 +43,15 @@
 
   /* carrossel top ofertas */
   .carousel{position:relative}
-  .car-track{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+  .car-track{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+  .car-track .card{width:100%;min-width:0;box-sizing:border-box}
   .car-page{display:contents}
   .car-btn{position:absolute;top:50%;transform:translateY(-50%);width:42px;height:42px;border-radius:50%;background:var(--card);border:1px solid var(--border);color:var(--accent);font-size:20px;cursor:pointer;z-index:5;box-shadow:0 2px 10px rgba(0,0,0,.4)}
   .car-btn:hover{border-color:var(--accent)}
   .car-btn.prev{left:-14px}
   .car-btn.next{right:-14px}
+  @media(max-width:980px){.car-track{grid-template-columns:repeat(2,minmax(0,1fr))}}
+  @media(max-width:560px){.car-track{grid-template-columns:minmax(0,1fr)}}
   .car-dots{text-align:center;margin-top:14px;font-size:12px;color:var(--dim)}
   .aff{align-items:center;text-align:center}
   .aff .logo{font-size:34px}
@@ -271,12 +274,18 @@ function renderTop(){
   carStartTimer();
 }
 
-// carrossel: 4 por página
+// carrossel: 4 por página (detecta quantos cabem pela largura real)
 let carPage = 0, carTimer = null;
+function carPerRow(){
+  const w = document.getElementById("topGrid").clientWidth || 900;
+  if(w < 560) return 1;
+  if(w < 980) return 2;
+  return 4;
+}
 function carUpdate(){
   const g = document.getElementById("topGrid");
   const total = g.children.length;
-  const perPage = 4;
+  const perPage = carPerRow();
   const pages = Math.ceil(total/perPage);
   if(carPage >= pages) carPage = pages-1;
   [...g.children].forEach((c,i)=>{
@@ -286,11 +295,12 @@ function carUpdate(){
 }
 function carMove(dir){
   const total = document.getElementById("topGrid").children.length;
-  const pages = Math.ceil(total/4);
+  const pages = Math.ceil(total/carPerRow());
   carPage = (carPage + dir + pages) % pages;
   carUpdate();
   carRestartTimer();
 }
+window.addEventListener("resize", ()=>{ carPage = 0; carUpdate(); });
 function carStartTimer(){
   if(carTimer) clearInterval(carTimer);
   carTimer = setInterval(()=>{ if(document.getElementById("topSection").style.display !== "none") carMove(1); }, 7000);
