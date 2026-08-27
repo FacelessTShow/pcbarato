@@ -38,6 +38,22 @@
   .empty{color:var(--dim);text-align:center;padding:40px 0}
   footer{text-align:center;color:var(--dim);font-size:13px;padding:32px 0}
   footer a{color:var(--accent);text-decoration:none}
+
+  /* widget PcB IA */
+  .pcb-fab{position:fixed;right:20px;bottom:20px;width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,#4f8cff,#9b6bff);border:none;cursor:pointer;font-size:26px;box-shadow:0 4px 18px rgba(79,140,255,.45);z-index:50}
+  .pcb-fab:hover{transform:scale(1.07)}
+  .pcb-panel{position:fixed;right:20px;bottom:92px;width:320px;max-width:calc(100vw - 32px);background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px;display:none;z-index:50;box-shadow:0 8px 30px rgba(0,0,0,.5)}
+  .pcb-panel.open{display:block}
+  .pcb-panel h3{font-size:16px;margin-bottom:4px}
+  .pcb-panel p{font-size:13px;color:var(--dim);margin-bottom:12px}
+  .pcb-q{display:block;width:100%;text-align:left;background:#0e1420;border:1px solid var(--border);border-radius:10px;padding:9px 12px;color:var(--text);font-size:13px;margin-bottom:7px;cursor:pointer}
+  .pcb-q:hover{border-color:var(--accent)}
+  .pcb-input{display:flex;gap:6px;margin-top:10px}
+  .pcb-input input{flex:1;background:#0e1420;border:1px solid var(--border);border-radius:10px;padding:9px 12px;color:var(--text);font-size:13px;outline:none}
+  .pcb-input input:focus{border-color:var(--accent)}
+  .pcb-input button{background:var(--accent);border:none;border-radius:10px;padding:0 14px;color:#fff;cursor:pointer;font-size:14px}
+  .pcb-foot{font-size:11px;color:var(--dim);margin-top:8px;text-align:center}
+
 </style>
 </head>
 <body>
@@ -66,6 +82,21 @@
     PCBarato © 2026 · Preços atualizados automaticamente · Alguns links são de afiliados — não custa nada a mais para você e mantém o projeto vivo 💙<br><br>
     <a href="https://t.me/AgentPcBbot">💬 Fale com a PcB IA no Telegram</a>
   </footer>
+</div>
+
+<!-- Widget PcB IA -->
+<button class="pcb-fab" id="pcbFab" title="Falar com a PcB IA">🤖</button>
+<div class="pcb-panel" id="pcbPanel">
+  <h3>🤖 PcB IA</h3>
+  <p>Me diz teu setup ou o que procuras que eu recomendo o melhor upgrade e onde tá mais barato:</p>
+  <button class="pcb-q" onclick="pcbAsk('Quero rodar jogos em 1440p, meu setup é um i5 9400F com GTX 1660. Qual upgrade vale mais a pena?')">🎮 "Quero jogar em 1440p, tenho i5 9400F + GTX 1660"</button>
+  <button class="pcb-q" onclick="pcbAsk('Qual a RTX 5060 mais barata agora e onde compro?')">💸 "RTX 5060 mais barata agora?"</button>
+  <button class="pcb-q" onclick="pcbAsk('Tenho R$ 3000 pra montar um PC gamer básico. O que você sugere?')">🖥️ "R$ 3000 pra PC gamer básico"</button>
+  <div class="pcb-input">
+    <input id="pcbText" placeholder="Ou escreve tua pergunta…" onkeydown="if(event.key==='Enter')pcbSend()">
+    <button onclick="pcbSend()">➤</button>
+  </div>
+  <div class="pcb-foot">O chat abre no Telegram (@AgentPcBbot) · grátis</div>
 </div>
 
 <script src="ofertas.js"></script>
@@ -119,6 +150,18 @@ document.getElementById("meta").textContent = "Atualizado em " + (window.OFERTAS
 document.getElementById("q").addEventListener("keydown", e=>{ if(e.key==="Enter") doSearch(); });
 renderFilters();
 render();
+
+// PcB IA widget
+const fab = document.getElementById("pcbFab"), panel = document.getElementById("pcbPanel");
+fab.addEventListener("click", ()=> panel.classList.toggle("open"));
+function pcbAsk(q){ pcbOpen(q); }
+function pcbSend(){
+  const t = document.getElementById("pcbText").value.trim();
+  if(t) pcbOpen(t);
+}
+function pcbOpen(q){
+  window.open("https://t.me/AgentPcBbot?start=" + encodeURIComponent(q), "_blank");
+}
 </script>
 </body>
 </html>
