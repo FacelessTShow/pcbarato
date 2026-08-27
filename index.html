@@ -395,7 +395,7 @@ function applyAll(){
 
 function resetF(){document.querySelectorAll("#resultsPage .side input").forEach(i=>i.checked=true);applyAll();}
 
-document.getElementById("meta").textContent = "Atualizado em " + (window.OFERTAS.updated||"").replace("T"," às ").slice(0,16);
+document.getElementById("meta").textContent = "Ofertas atualizadas em " + (window.OFERTAS.updated||"").slice(0,10).split("-").reverse().join("/");
 document.getElementById("q").addEventListener("keydown", e=>{ if(e.key==="Enter") doSearch(); });
 renderFilters();
 renderTop();
