@@ -536,11 +536,12 @@ function openAll(){
       <button class="clear" onclick="closeAll()">← Voltar à busca</button>
     </div>
     <div class="mainall">
-        <div style="display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap">
-          <h1 style="margin:0">🔍 Todos os resultados</h1>
+        <h1 style="margin:0 0 4px">🔍 Todos os resultados</h1>
+        <p class="sub" style="margin:0 0 10px">${rows.length} ofertas${q?" para &quot;"+q+"&quot;":""}</p>
+        <div style="display:flex;justify-content:flex-end;margin:-8px 0 10px">
           <div style="display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:6px 10px">
             <span style="font-size:12px;color:var(--dim)">Ordenar por</span>
-            <select id="sortSel" class="sortsel" style="width:auto;padding:4px 8px;background:transparent;border:none;color:var(--text);font-size:13px;font-weight:600">
+            <select id="sortSel" style="width:auto;padding:4px 8px;background:transparent;border:none;color:var(--text);font-size:13px;font-weight:600;outline:none">
               <option value="best">🔥 Mais vendidos</option>
               <option value="price_asc">Menor preço</option>
               <option value="price_desc">Maior preço</option>
@@ -550,11 +551,11 @@ function openAll(){
             </select>
           </div>
         </div>
-        <div id="top3Wrap" style="margin:16px 0 20px">
-          <h3 style="font-size:15px;color:var(--gold);margin:0 0 10px">🏆 Top 3 menores preços — ${q?"&quot;"+q+"&quot;":""}</h3>
+        <div id="top3Wrap" style="margin:0 0 20px">
+          <h3 style="font-size:15px;color:var(--gold);margin:0 0 10px;text-align:center">🏆 Top 3 Menores Preços${q?" — &quot;"+q+"&quot;":""}</h3>
           <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px" id="top3Grid"></div>
         </div>
-        <p class="sub">${rows.length} ofertas · <span id="visCount"></span> visíveis</p>
+        <p class="sub"><span id="visCount"></span> visíveis</p>
         <div class="grid" id="allGrid"></div>
         <p class="nores" id="nores">Nenhuma oferta com esses filtros.</p>
       </div>
