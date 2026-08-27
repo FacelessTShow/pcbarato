@@ -485,21 +485,25 @@ function openAll(){
       <h3>Categoria</h3><div id="fCat">${cats.map(c=>`<label><input type="checkbox" class="f-cat" value="${c}" checked> ${c.charAt(0).toUpperCase()+c.slice(1)}</label>`).join("")}</div>
       <h3>Condição</h3><div id="fCond">${conds.map(c=>`<label><input type="checkbox" class="f-cond" value="${c}" checked> ${c==="novo"?"Novo":c==="usado"?"Usado":"Seminovo/Open-box"}</label>`).join("")}</div>
       ${keywords.length?`<h3>Palavras-chave</h3><div id="fKw">${keywords.map(k=>`<label><input type="checkbox" class="f-kw" value="${k}"> ${k}</label>`).join("")}</div>`:""}
-      <h3>Ordenar por</h3>
-      <select id="sortSel" class="sortsel">
-        <option value="best">🔥 Mais vendidos (recomendado)</option>
-        <option value="price_asc">Menor preço</option>
-        <option value="price_desc">Maior preço</option>
-        <option value="az">Nome (A–Z)</option>
-        <option value="za">Nome (Z–A)</option>
-        <option value="loja">Loja (A–Z)</option>
-      </select>
       <button class="clear" onclick="resetF()">Limpar filtros</button>
       <button class="clear" onclick="closeAll()">← Voltar à busca</button>
     </div>
     <div class="mainall">
-        <h1>🔍 Todos os resultados</h1>
-        <div id="top3Wrap" style="margin-bottom:20px">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap">
+          <h1 style="margin:0">🔍 Todos os resultados</h1>
+          <div style="display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:6px 10px">
+            <span style="font-size:12px;color:var(--dim)">Ordenar por</span>
+            <select id="sortSel" class="sortsel" style="width:auto;padding:4px 8px;background:transparent;border:none;color:var(--text);font-size:13px;font-weight:600">
+              <option value="best">🔥 Mais vendidos</option>
+              <option value="price_asc">Menor preço</option>
+              <option value="price_desc">Maior preço</option>
+              <option value="az">Nome (A–Z)</option>
+              <option value="za">Nome (Z–A)</option>
+              <option value="loja">Loja (A–Z)</option>
+            </select>
+          </div>
+        </div>
+        <div id="top3Wrap" style="margin:16px 0 20px">
           <h3 style="font-size:15px;color:var(--gold);margin:0 0 10px">🏆 Top 3 menores preços — ${q?"&quot;"+q+"&quot;":""}</h3>
           <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px" id="top3Grid"></div>
         </div>
@@ -523,7 +527,8 @@ function openAll(){
   const t3 = document.getElementById("top3Grid");
   t3.innerHTML = "";
   rows.slice(0,3).forEach((o,i)=>{
-    const c = card(o, "🥇🥈🥉"[i] + " menor preço");
+    const medals = ["🥇 menor preço","🥈 2º menor","🥉 3º menor"];
+    const c = card(o, medals[i]);
     c.style.cursor = "default";
     t3.appendChild(c);
   });
