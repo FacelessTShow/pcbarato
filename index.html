@@ -244,14 +244,14 @@ function doSearch(){
   if(fromTop) main.value = top.value; else top.value = main.value;
   const q = main.value.trim().toLowerCase();
   const url = new URL(location); q?url.searchParams.set("q",q):url.searchParams.delete("q");
-  // se está na página "ver todas", permanece nela (recarrega os resultados com o novo termo)
+  // se está na página "ver todas", permanece nela (regenera tudo com o novo termo)
   const inAll = document.getElementById("resultsPage").style.display === "block";
-  if(!inAll){
-    history.replaceState(null,"",url.pathname + url.search);
-    render();
+  history.replaceState(null,"",url.pathname + url.search + (inAll ? "#todas" : ""));
+  if(inAll){
+    window.__allRows = null; // força recalcular com o novo termo
+    openAll();
   } else {
-    history.replaceState(null,"",url.pathname + url.search + "#todas");
-    openAll();  // regenera tudo (top3 + grid + filtros) com o novo termo
+    render();
   }
 }
 
@@ -426,8 +426,18 @@ function render(){
 }
 
 function openAll(){
-  const rows = window.__allRows || [];
-  const q = document.getElementById("q").value.trim();
+  // recalcula os resultados com o termo ATUAL da barra de topo (ou do campo principal)
+  const term = (document.getElementById("qTop").value || document.getElementById("q").value).trim();
+  document.getElementById("q").value = term;
+  const terms = term.toLowerCase().split(/\s+/).filter(Boolean);
+  let rows = ALL.filter(o=> selLojas.has(o.s) && terms.every(t=> o.t.toLowerCase().includes(t)));
+  rows.sort((a,b)=>a.p-b.p);
+  const COMPONENT_WORDS = /(nvme|ssd|hdd|fonte|placa|processador|memoria|mem(ó|o)ria|cooler|gabinete|teclado|mouse|headset|monitor|controle|pasta t(é|e)rmica|webcam|roteador|cabo)/i;
+  if(terms.length && COMPONENT_WORDS.test(terms.join(" "))){
+    const filtered = rows.filter(o=> !/pc gamer|pc montado|computador completo|desktop completo/i.test(o.t));
+    if(filtered.length) rows = filtered;
+  }
+  const q = term;
   const lojas = [...new Set(rows.map(o=>o.s))];
   // faixas de preço baseadas nos dados
   const prices = rows.map(o=>o.p);
