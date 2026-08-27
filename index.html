@@ -494,13 +494,17 @@ function openAll(){
     ["cpu", /(ryzen|core i[3579]|processador)/i],
     ["placa-mãe", /placa m(ã|a)e/i],
     ["ram", /(mem(ó|o)ria|\bddr[45]\b)/i],
-    ["armazenamento", /(ssd|nvme|\bm\.2\b|\bhd\b|hdd)/i],
+    ["armazenamento", /(ssd|nvme|\bm\.2\b|\bhd\b|hdd|pendrive|cart(ã|a)o de mem(ó|o)ria)/i],
     ["fonte", /(fonte\b|psu\b)/i],
     ["cooler/fan", /(cooler|ventoinha|water ?cooler|\bfan\b)/i],
     ["gabinete", /(gabinete|case\b)/i],
     ["monitor", /monitor/i],
     ["periféricos", /(teclado|mouse|headset|fone|controle|mousepad|webcam|microfone)/i],
     ["redes", /(roteador|wi-?fi|wireless|adaptador de rede|switch)/i],
+    ["iluminação", /(fita led|fita led rgb|l(â|a)mpada|ilumina(ç|c)(ã|a)o|rgb)/i],
+    ["áudio", /(caixa de som|soundbar|speaker)/i],
+    ["computadores", /(pc gamer|pc montado|computador|desktop|notebook)/i],
+    ["energia", /(nobreak|\bups\b|estabilizador|bateria)/i],
     ["outros", /./],
   ];
   rows.forEach(o=>{
