@@ -168,10 +168,6 @@
     <div class="meta" id="meta" style="margin-top:10px"></div>
   </header>
 
-  <div class="search" id="mainSearch" style="display:none">
-    <input id="q" placeholder='Ex.: rtx 5060, ryzen 5 5600, ssd 1tb…' autocomplete="off">
-    <button onclick="doSearch()">Buscar</button>
-  </div>
   <div class="filters" id="filters"></div>
 
   <div id="topSection">
@@ -440,7 +436,6 @@ function render(){
   document.getElementById("topSection").style.display = hasQuery ? "none" : "";
   document.getElementById("searchSection").style.display = hasQuery ? "" : "none";
   document.getElementById("filters").style.display = hasQuery ? "" : "none";
-  document.getElementById("mainSearch").style.display = hasQuery ? "" : "none";
   if(!hasQuery) return;
   const rows = searchRows(term);
   // relevantes = score >= 0; o resto vem depois
@@ -527,10 +522,10 @@ function openAll(){
         <input type="range" id="priceMax" class="prange" min="${Math.floor(min)}" max="${Math.ceil(max)}" value="${Math.ceil(max)}" step="1">
       </div>
       <div class="range-vals"><span id="pMinLbl"></span><span id="pMaxLbl"></span></div>
-      <h3>Loja</h3><div id="fLoja">${lojas.map(l=>`<label><input type="checkbox" class="f-loja" value="${l}"> ${l}</label>`).join("")}</div>
-      <h3>Marca</h3><div id="fMarca">${marcas.map(m=>`<label><input type="checkbox" class="f-marca" value="${m}"> ${m.charAt(0).toUpperCase()+m.slice(1)}</label>`).join("")}</div>
-      <h3>Categoria</h3><div id="fCat">${cats.map(c=>`<label><input type="checkbox" class="f-cat" value="${c}"> ${c.charAt(0).toUpperCase()+c.slice(1)}</label>`).join("")}</div>
-      <h3>Condição</h3><div id="fCond">${conds.map(c=>`<label><input type="checkbox" class="f-cond" value="${c}"> ${c==="novo"?"Novo":c==="usado"?"Usado":"Seminovo/Open-box"}</label>`).join("")}</div>
+      <h3>Loja</h3><div id="fLoja">${lojas.map(l=>`<label><input type="checkbox" class="f-loja" value="${l}" checked> ${l}</label>`).join("")}</div>
+      <h3>Marca</h3><div id="fMarca">${marcas.map(m=>`<label><input type="checkbox" class="f-marca" value="${m}" checked> ${m.charAt(0).toUpperCase()+m.slice(1)}</label>`).join("")}</div>
+      <h3>Categoria</h3><div id="fCat">${cats.map(c=>`<label><input type="checkbox" class="f-cat" value="${c}" checked> ${c.charAt(0).toUpperCase()+c.slice(1)}</label>`).join("")}</div>
+      <h3>Condição</h3><div id="fCond">${conds.map(c=>`<label><input type="checkbox" class="f-cond" value="${c}" checked> ${c==="novo"?"Novo":c==="usado"?"Usado":"Seminovo/Open-box"}</label>`).join("")}</div>
       ${keywords.length?`<h3>Palavras-chave</h3><div id="fKw">${keywords.map(k=>`<label><input type="checkbox" class="f-kw" value="${k}"> ${k}</label>`).join("")}</div>`:""}
       <button class="clear" onclick="resetF()">Limpar filtros</button>
       <button class="clear" onclick="closeAll()">← Voltar à busca</button>
@@ -575,7 +570,7 @@ function openAll(){
   const t3 = document.getElementById("top3Grid");
   t3.innerHTML = "";
   rows.slice(0,3).forEach((o,i)=>{
-    const medals = ["Menor preço","2º Menor preço","3º Menor preço"];
+    const medals = ["TOP 1","TOP 2","TOP 3"];
     const c = card(o, medals[i]);
     c.style.cursor = "default";
     t3.appendChild(c);
