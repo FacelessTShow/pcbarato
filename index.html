@@ -307,7 +307,10 @@ function openAll(){
     const a = Math.round(min+step*i), b = Math.round(min+step*(i+1));
     faixas.push([i, "R$ "+a.toLocaleString("pt-BR")+" – "+(i===3?"R$ "+b.toLocaleString("pt-BR")+" +":"R$ "+b.toLocaleString("pt-BR")), a, i===3?Infinity:b]);
   }
-  const marcas = [...new Set(rows.map(o=>(o.t.match(/(msi|gigabyte|asus|asrock|zotac|inno3d|galax|gainward|pny|colorful|powercolor|sapphire|corsair|kingston|xpg|adata|crucial|sandisk|wd|seagate|evga|logitech|redragon|hyperx|razer|multilaser|rise mode|noctua|deepcool|thermalright|mancer|hiksemi)/i)||[null,"outra"])[1].toLowerCase()))];
+  const BRAND_RX = /(msi|gigabyte|asus|asrock|zotac|inno3d|galax|gainward|pny|colorful|powercolor|sapphire|corsair|kingston|xpg|adata|crucial|sandisk|wd\b|seagate|evga|logitech|redragon|hyperx|razer|multilaser|rise mode|noctua|deepcool|thermalright|mancer|hiksemi|cooler master|montech|ocypus|amd|intel|azza|aigo|picsil)/i;
+  const marcas = [...new Set(rows.map(o=>(o.t.match(BRAND_RX)||[null,"outra"])[1].toLowerCase()))];
+  // marca por item (pré-calculada; "outra" = sem marca conhecida)
+  rows.forEach(o=>{ o._marca = (o.t.match(BRAND_RX)||[null,"outra"])[1].toLowerCase(); });
   document.getElementById("resultsPage").innerHTML = `
   <div class="allpage">
     <div class="side">
@@ -357,7 +360,7 @@ function applyAll(){
   let vis=0;
   document.querySelectorAll("#allGrid .card").forEach((c,idx)=>{
     const o=rows[idx];
-    const marcaOk=[...marcas].some(m=>o.t.toLowerCase().includes(m));
+    const marcaOk=[...marcas].some(m=> m==="outra" ? o._marca==="outra" : o._marca===m);
     const precoOk=faixas.some(([a,b])=>o.p>=a&&o.p<=b);
     const ok=lojas.has(o.s)&&marcaOk&&precoOk;
     c.style.display=ok?"":"none"; if(ok)vis++;
