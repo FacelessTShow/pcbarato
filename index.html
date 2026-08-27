@@ -76,6 +76,9 @@
   .pcb-msg a{color:var(--accent)}
   .pcb-chat{display:flex;flex-direction:column;max-height:340px;overflow-y:auto;margin-bottom:10px}
   .pcb-tg{display:block;text-align:center;margin-top:6px;font-size:12px;color:var(--accent);text-decoration:none;cursor:pointer}
+  .pcb-sug{display:flex;flex-direction:column;gap:6px;margin-bottom:10px}
+  .pcb-sug button{background:#0e1420;border:1px solid var(--border);border-radius:10px;padding:8px 12px;color:var(--text);font-size:12.5px;cursor:pointer;text-align:left}
+  .pcb-sug button:hover{border-color:var(--accent);color:var(--accent)}
 
 
 </style>
@@ -121,6 +124,7 @@
 <button class="pcb-fab" id="pcbFab" title="Falar com a PcB IA">🤖</button>
 <div class="pcb-panel" id="pcbPanel">
   <h3>🤖 PcB IA</h3>
+  <div class="pcb-sug" id="pcbSug"></div>
   <div class="pcb-chat" id="pcbChat"></div>
   <div class="pcb-input">
     <input id="pcbText" placeholder="Ex.: tenho R$ 2500, quero jogar em 1440p…" onkeydown="if(event.key==='Enter')pcbSend()">
@@ -239,7 +243,47 @@ render();
 const fab = document.getElementById("pcbFab"), panel = document.getElementById("pcbPanel");
 const chat = document.getElementById("pcbChat");
 const API = "/api/chat";
-fab.addEventListener("click", ()=>{ panel.classList.toggle("open"); if(!chat.dataset.hi){ pcbMsg("bot","E aí! 👋 Sou a PcB IA. Me diz teu setup, orçamento ou o que procuras que eu recomendo o upgrade com melhor custo-benefício — usando as ofertas reais do site."); chat.dataset.hi=1; } });
+
+const PCB_QUESTIONS = [
+  "💸 Qual a RTX 5060 mais barata agora?",
+  "🎮 Quero jogar em 1440p, tenho i5 9400F + GTX 1660 — qual upgrade?",
+  "🖥️ Monte um PC gamer por R$ 3000",
+  "🧠 Ryzen 5 5600 ou i5 12400F, qual compensa?",
+  "⬆️ Meu PC tá lento, o que troco primeiro com R$ 800?",
+  "💾 SSD de 1TB barato pra colocar o sistema, tem?",
+  "⚡ Fonte de 650W boa e barata, qual?",
+  "🔧 A minha RX 580 segura jogos em 1080p hoje? Vale trocar?",
+  "🧩 Upgrade de R$ 1500 pra ganhar FPS em CS2 e Valorant",
+  "💰 Vale a pena pagar mais caro numa RTX 5060 Ti vs 5060?",
+  "🖥️ Monitor 144Hz barato pra jogos competitivos, recomenda?",
+  "🧠 Melhor CPU custo-benefício até R$ 900?",
+];
+function sampleQuestions(n=3){
+  const pool = [...PCB_QUESTIONS];
+  const out = [];
+  while(out.length < n && pool.length){
+    out.push(pool.splice(Math.floor(Math.random()*pool.length),1)[0]);
+  }
+  return out;
+}
+function renderSuggestions(){
+  const s = document.getElementById("pcbSug");
+  s.innerHTML = "";
+  sampleQuestions().forEach(q=>{
+    const b = document.createElement("button");
+    b.textContent = q;
+    b.onclick = ()=>{ s.style.display="none"; pcbMsg("user", q); pcbReply(q); };
+    s.appendChild(b);
+  });
+}
+
+fab.addEventListener("click", ()=>{
+  panel.classList.toggle("open");
+  if(panel.classList.contains("open")){
+    renderSuggestions();  // perguntas novas aleatórias a cada clique
+    if(!chat.dataset.hi){ pcbMsg("bot","E aí! 👋 Sou a PcB IA. Escolhe uma pergunta ou me diz teu setup/orçamento que eu recomendo o upgrade com melhor custo-benefício — com base nas ofertas reais do site."); chat.dataset.hi=1; }
+  }
+});
 
 function pcbMsg(who, text){
   const d = document.createElement("div");
