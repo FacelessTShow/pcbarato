@@ -41,7 +41,7 @@ NUNCA invente preço como se fosse oferta real da lista. Links não precisam ser
 OFERTAS ATUAIS (ordenadas por preço):
 ${top || "(nenhuma oferta carregada)"}`;
 
-  const models = ["minimax/minimax-m3:free", "nvidia/nemotron-3.5-lightning:free", "google/gemma-4-31b-it:free", "z-ai/glm-5.2:free"];
+  const models = ["minimax/minimax-m3:free", "nvidia/nemotron-3.5-lightning:free", "google/gemma-4-31b-it:free", "z-ai/glm-5.2:free", "meta-llama/llama-4-maverick:free", "deepseek/deepseek-chat-v3-0324:free", "qwen/qwen-2.5-72b-instruct:free", "mistralai/mistral-small-3.2-24b-instruct:free"];
   let reply = null, lastErr = null;
   for (const model of models) {
     try {

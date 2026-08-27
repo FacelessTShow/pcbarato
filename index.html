@@ -246,9 +246,7 @@ function doSearch(){
   // sincroniza os dois campos de busca
   const fromTop = document.activeElement === document.getElementById("qTop");
   const top = document.getElementById("qTop");
-  const main = document.getElementById("q");
-  if(fromTop) main.value = top.value; else top.value = main.value;
-  const q = main.value.trim().toLowerCase();
+  const q = top.value.trim().toLowerCase();
   const url = new URL(location); q?url.searchParams.set("q",q):url.searchParams.delete("q");
   // se está na página "ver todas", permanece nela (regenera tudo com o novo termo)
   const inAll = document.getElementById("resultsPage").style.display === "block";
@@ -266,7 +264,6 @@ function doSearchFromTop(){ doSearch(); }
 function goHome(){
   document.getElementById("resultsPage").style.display = "none";
   document.getElementById("homePage").style.display = "";
-  document.getElementById("q").value = "";
   document.getElementById("qTop").value = "";
   const url = new URL(location); url.searchParams.delete("q");
   history.replaceState(null,"",url.pathname + url.search);
@@ -434,7 +431,7 @@ function searchRows(term){
 }
 
 function render(){
-  const term = document.getElementById("q").value.trim();
+  const term = document.getElementById("qTop").value.trim();
   const hasQuery = term.length > 0;
   document.getElementById("topSection").style.display = hasQuery ? "none" : "";
   document.getElementById("searchSection").style.display = hasQuery ? "" : "none";
@@ -463,8 +460,7 @@ function render(){
 
 function openAll(){
   // recalcula os resultados com o termo ATUAL — ordenados por RELEVÂNCIA
-  const term = (document.getElementById("qTop").value || document.getElementById("q").value).trim();
-  document.getElementById("q").value = term;
+  const term = document.getElementById("qTop").value.trim();
   const rows = searchRows(term);
   const q = term;
   const lojas = [...new Set(rows.map(o=>o.s))];
@@ -597,7 +593,6 @@ function closeAll(){
   document.getElementById("resultsPage").style.display = "none";
   document.getElementById("homePage").style.display = "";
   // volta limpo, como recém-aberto
-  document.getElementById("q").value = "";
   const url = new URL(location); url.searchParams.delete("q");
   history.replaceState(null,"",url.pathname + url.search);
   render();
@@ -616,8 +611,7 @@ window.addEventListener("popstate", (e)=>{
     // voltou: fecha a página de resultados e volta pra home
     document.getElementById("resultsPage").style.display = "none";
     document.getElementById("homePage").style.display = "";
-    document.getElementById("q").value = "";
-    const url = new URL(location); url.searchParams.delete("q");
+      const url = new URL(location); url.searchParams.delete("q");
     history.replaceState(null,"",url.pathname + url.search);
     render();
     const s = document.getElementById("pcbSug"); if(s) s.style.display = "";
@@ -704,11 +698,8 @@ function resetF(){
   priceSliderInit();
 }
 
-// sincroniza o campo do topbar quando digita no principal
-document.getElementById("q").addEventListener("input", ()=>{ document.getElementById("qTop").value = document.getElementById("q").value; });
 
 document.getElementById("meta").textContent = "Ofertas atualizadas em " + (window.OFERTAS.updated||"").slice(0,10).split("-").reverse().join("/");
-document.getElementById("q").addEventListener("keydown", e=>{ if(e.key==="Enter") doSearch(); });
 renderFilters();
 renderTop();
 renderAffiliates();
