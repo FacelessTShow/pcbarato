@@ -20,7 +20,16 @@ export default async function handler(req, res) {
   let ofertas = Array.isArray(EMBED_OFFERS) ? EMBED_OFFERS : [];
 
 
-  const top = ofertas.slice(0, 60)
+  // prioriza hardware principal (GPU/CPU/PLL/RAM/SSD/Fonte), evita encher de pendrive/mousepad
+  const KEY = /(rtx|gtx|rx \d|ryzen|core i|processador|placa m(ã|a)e|placa de v(í|i)deo|mem(ó|o)ria|ssd|hd |fonte|cooler|gabinete|monitor)/i;
+  const scored = ofertas.filter(o => KEY.test(o.t));
+  const pool = (scored.length >= 30 ? scored : ofertas).slice(0, 120);
+  // nas GPUs, mostra as 25 mais baratas primeiro
+  const gpus = pool.filter(o => /rtx|gtx|rx \d|placa de v(í|i)deo/i.test(o.t)).slice(0, 25);
+  const rest = pool.filter(o => !gpus.includes(o)).slice(0, 75);
+  const lista = [...gpus, ...rest];
+
+  const top = lista
     .map(o => `- ${o.s} | R$ ${o.p.toFixed(2).replace(".", ",")} | ${o.t}`)
     .join("\n");
 
