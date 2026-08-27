@@ -178,14 +178,25 @@ function card(o, badge){
 }
 
 // CATEGORIAS: top 1 mais barato de cada (com exclusões pra não pegar PC montado / item errado)
-const NOT_PC = /pc gamer|pc montado|computador|desktop|kit upgrade|notebook|monitor|celular|smartphone/i;
+const NOT_PC = /pc gamer|pc montado|computador|desktop|kit upgrade|notebook|celular|smartphone/i;
 const CATS = [
-  ["🎮 GPU", /(\brtx\b|\bgtx\b|\barc\b a?[\d]{3,}|radeon rx|placa de v(í|i)deo)/i, /pc gamer|placa m(ã|a)e/i],
-  ["🧠 CPU", /(ryzen|core i[3579]|processador)/i, /pc gamer|placa|refriger|cooler/i],
-  ["🔧 Placa-mãe", /(placa m(ã|a)e\b)/i, /pc gamer/i],
+  ["🎮 GPU", /(\brtx\b|\bgtx\b|\barc\b a?[\d]{3,}|radeon rx|placa de v(í|i)deo)/i, /pc gamer|placa m(ã|a)e|notebook/i],
+  ["🧠 CPU", /(ryzen|core i[3579]|processador)/i, /pc gamer|placa|refriger|cooler|notebook/i],
+  ["🔧 Placa-mãe", /(placa m(ã|a)e\b)/i, /pc gamer|notebook/i],
   ["💾 RAM", /(mem(ó|o)ria (ram|para)|\bddr[45]\b)/i, /pc gamer|placa m(ã|a)e|ssd|notebook/i],
-  ["🗄️ SSD/HDD", /(ssd|nvme|\bm\.2\b|hd interno|disco (sólido|duplo))/i, /pc gamer|gabinete/i],
-  ["⚡ Fonte", /(fonte\b|psu\b)/i, /pc gamer|cabo/i],
+  ["🗄️ SSD/HDD", /(ssd|nvme|\bm\.2\b|hd interno|disco (sólido|duplo)|\bhd \d)/i, /pc gamer|gabinete|notebook/i],
+  ["⚡ Fonte", /(fonte\b|psu\b)/i, /pc gamer|cabo|notebook/i],
+  ["❄️ Cooler", /(cooler|water ?cooler|ventoinha|fan \d{3}|arctic|disipador)/i, /pc gamer|notebook|pasta/i],
+  ["🖼️ Gabinete", /(gabinete|case\b|gamer mid|full tower)/i, /pc gamer|monitor/i],
+  ["🖥️ Monitor", /(monitor|tv |painel)/i, /pc gamer|suporte/i],
+  ["⌨️ Teclado", /(teclado)/i, /pc gamer.*com monitor|pel(í|i)cula/i],
+  ["🖱️ Mouse", /(mouse(?!pad))/i, /pc gamer/i],
+  ["🎧 Headset", /(headset|fone de ouvido|earphone|fone gamer)/i, /pc gamer/i],
+  ["🎮 Controle", /(controle|joystick|gamepad|manete)/i, /pc gamer/i],
+  ["🪭 Mousepad", /(mousepad|mouse pad)/i],
+  ["🧴 Pasta térmica", /(pasta t(é|e)rmica|thermal paste|graxa t(é|e)rmica)/i, /pc gamer/i],
+  ["💨 Limpeza", /(sopro|ar comprimido|kit limpeza|pincel|álcool isoprop(í|i)lico)/i, /pc gamer/i],
+  ["🔌 Cabos & adaptadores", /(cabo hdmi|cabo displayport|cabo usb|adaptador|extens(ã|a)o usb|hub usb)/i, /pc gamer/i],
 ];
 function renderTop(){
   const g = document.getElementById("topGrid");
