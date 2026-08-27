@@ -22,8 +22,15 @@ export default async function handler(req, res) {
     try {
       const fs = await import("fs");
       const path = await import("path");
-      const p = path.join(process.cwd(), "api", "ofertas-data.json");
-      ofertas = JSON.parse(fs.readFileSync(p, "utf8")).offers || [];
+      for (const p of [
+        path.join(process.cwd(), "ofertas-data.json"),
+        path.join(process.cwd(), "api", "ofertas-data.json"),
+      ]) {
+        try {
+          ofertas = JSON.parse(fs.readFileSync(p, "utf8")).offers || [];
+          if (ofertas.length) break;
+        } catch {}
+      }
     } catch {}
   }
 
