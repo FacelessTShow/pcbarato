@@ -44,6 +44,22 @@
   .aff .desc{font-size:12px;color:var(--dim);flex:1}
   .aff.soon{opacity:.55}
   .aff .soon-tag{font-size:11px;color:var(--gold)}
+
+  /* página "ver todas" (mesma aba) */
+  .allpage{display:flex;max-width:1400px;margin:0 auto;min-height:100vh}
+  .allpage .side{width:230px;min-width:230px;background:#10161f;border-right:1px solid var(--border);padding:18px;max-height:100vh;overflow-y:auto;position:sticky;top:0;height:100vh;box-sizing:border-box}
+  .allpage .side h3{font-size:13px;color:var(--dim);margin:18px 0 8px;text-transform:uppercase;letter-spacing:.5px}
+  .allpage .side h3:first-child{margin-top:0}
+  .allpage .side label{display:flex;align-items:center;gap:7px;font-size:13px;padding:3px 0;cursor:pointer;color:var(--text)}
+  .allpage .side input[type=checkbox]{accent-color:var(--accent)}
+  .allpage .mainall{flex:1;padding:24px;box-sizing:border-box}
+  .allpage h1{font-size:22px;margin:0 0 4px;color:var(--text)}
+  .allpage .sub{color:var(--dim);font-size:14px;margin:0 0 16px}
+  .allpage .nores{color:var(--dim);margin-top:30px;display:none}
+  .allpage .clear{background:none;border:1px solid var(--border);color:var(--dim);border-radius:8px;padding:5px 12px;font-size:12px;cursor:pointer;margin-top:14px;display:block;width:100%}
+  .allpage .clear:hover{color:var(--accent);border-color:var(--accent)}
+  @media(max-width:760px){.allpage{flex-direction:column}.allpage .side{position:static;width:auto;height:auto;max-height:none;border-right:none;border-bottom:1px solid var(--border)}}
+  .nores{color:var(--dim);margin-top:30px;display:none}
   .item{display:flex;align-items:center;gap:14px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 16px;transition:border-color .15s}
   .item:hover{border-color:#3a5a8a}
   .price{font-size:19px;font-weight:700;color:var(--green);white-space:nowrap;min-width:110px}
