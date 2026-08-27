@@ -400,29 +400,59 @@ const AFF_LINKS = {
   pichau: "https://www.pichau.com.br",
 };
 
+// relevância: pontua cada oferta contra o termo buscado
+function scoreRelevance(o, terms, all){
+  const t = o.t.toLowerCase();
+  let score = 0;
+  if(!terms.every(x=> t.includes(x))) return -1;
+  terms.forEach(x=>{
+    if(t.includes(x)) score += 10;
+    if(new RegExp("\\b"+x.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")+"\\b").test(t)) score += 15;
+    if(t.startsWith(x)) score += 5;
+  });
+  const termoGpu = /rtx|gtx|rx \d/i.test(terms.join(" "));
+  // PC montado: penaliza forte quando a busca é por componente/GPU
+  const isPc = /pc gamer|pc montado/i.test(t);
+  if(isPc && !/pc\b/.test(terms.join(" "))) score -= 40;
+  // fita LED/menções do número em acessórios: penaliza quando parece modelo de GPU
+  if(/fita|led rgb|ws2811|ws2812/i.test(t) && termoGpu) score -= 50;
+  // placa de vídeo avulsa: boost quando busca GPU
+  if(/placa de v(í|i)deo/i.test(t) && termoGpu) score += 25;
+  // se existem placas de vídeo nas resultados, PCs montados e acessórios caem mais
+  if(all && termoGpu){
+    const temPlacaAvulsa = all.some(x=> /placa de v(í|i)deo/i.test(x.t) && terms.every(tm=> x.t.toLowerCase().includes(tm)));
+    if(temPlacaAvulsa && isPc) score -= 50;
+    if(temPlacaAvulsa && /fita|led/i.test(t)) score -= 50;
+  }
+  return score;
+}
+
+function searchRows(term){
+  const terms = term.toLowerCase().split(/\s+/).filter(Boolean);
+  let rows = ALL.filter(o=> selLojas.has(o.s) && terms.every(t=> o.t.toLowerCase().includes(t)));
+  rows.forEach(o=>{ o._score = scoreRelevance(o, terms, rows); });
+  rows.sort((a,b)=> (b._score - a._score) || (a.p - b.p));
+  return rows;
+}
+
 function render(){
-  const terms = document.getElementById("q").value.trim().toLowerCase().split(/\s+/).filter(Boolean);
-  const hasQuery = terms.length > 0;
+  const term = document.getElementById("q").value.trim();
+  const hasQuery = term.length > 0;
   document.getElementById("topSection").style.display = hasQuery ? "none" : "";
   document.getElementById("searchSection").style.display = hasQuery ? "" : "none";
   document.getElementById("filters").style.display = hasQuery ? "" : "none";
   if(!hasQuery) return;
-  let rows = ALL.filter(o=> selLojas.has(o.s) && terms.every(t=> o.t.toLowerCase().includes(t)));
-  rows.sort((a,b)=>a.p-b.p);
-  // se o termo parece componente (nvme, ssd, fonte, placa...), exclui PCs montados
-  const COMPONENT_WORDS = /(nvme|ssd|hdd|fonte|placa|processador|memoria|mem(ó|o)ria|cooler|gabinete|teclado|mouse|headset|monitor|controle|pasta t(é|e)rmica|webcam|roteador|cabo)/i;
-  if(terms.length && COMPONENT_WORDS.test(terms.join(" "))){
-    const filtered = rows.filter(o=> !/pc gamer|pc montado|computador completo|desktop completo/i.test(o.t));
-    if(filtered.length) rows = filtered;
-  }
-  document.getElementById("searchTitle").textContent = "🔍 Resultados: " + document.getElementById("q").value.trim();
-  document.getElementById("count").textContent = rows.length + " ofertas encontradas — mostrando as 5 mais baratas";
+  const rows = searchRows(term);
+  // relevantes = score >= 0; o resto vem depois
+  const relevantes = rows.filter(o=>o._score >= 0 && !/pc gamer|fita led|fita led rgb/i.test(o.t) || (o._score >= 10 && !/fita/i.test(o.t)));
+  const corpo = rows.filter(o=> !relevantes.includes(o));
+  document.getElementById("searchTitle").textContent = "🔍 Resultados: " + term;
+  document.getElementById("count").textContent = rows.length + " ofertas encontradas — mostrando as 5 mais relevantes";
   const list = document.getElementById("list");
   list.innerHTML = "";
-  rows.slice(0,5).forEach(o=> list.appendChild(card(o)));
+  (relevantes.length?relevantes:corpo).slice(0,5).forEach(o=> list.appendChild(card(o)));
   if(!rows.length){ document.getElementById("empty").style.display = "block"; return; }
 
-  // "ver todas" — página própria com o resultado completo
   const more = document.getElementById("moreWrap");
   if(rows.length > 5){
     more.style.display = "block";
@@ -434,17 +464,10 @@ function render(){
 }
 
 function openAll(){
-  // recalcula os resultados com o termo ATUAL da barra de topo (ou do campo principal)
+  // recalcula os resultados com o termo ATUAL — ordenados por RELEVÂNCIA
   const term = (document.getElementById("qTop").value || document.getElementById("q").value).trim();
   document.getElementById("q").value = term;
-  const terms = term.toLowerCase().split(/\s+/).filter(Boolean);
-  let rows = ALL.filter(o=> selLojas.has(o.s) && terms.every(t=> o.t.toLowerCase().includes(t)));
-  rows.sort((a,b)=>a.p-b.p);
-  const COMPONENT_WORDS = /(nvme|ssd|hdd|fonte|placa|processador|memoria|mem(ó|o)ria|cooler|gabinete|teclado|mouse|headset|monitor|controle|pasta t(é|e)rmica|webcam|roteador|cabo)/i;
-  if(terms.length && COMPONENT_WORDS.test(terms.join(" "))){
-    const filtered = rows.filter(o=> !/pc gamer|pc montado|computador completo|desktop completo/i.test(o.t));
-    if(filtered.length) rows = filtered;
-  }
+  const rows = searchRows(term);
   const q = term;
   const lojas = [...new Set(rows.map(o=>o.s))];
   // faixas de preço baseadas nos dados
