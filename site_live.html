@@ -246,7 +246,9 @@ function doSearch(){
   // sincroniza os dois campos de busca
   const fromTop = document.activeElement === document.getElementById("qTop");
   const top = document.getElementById("qTop");
-  const q = top.value.trim().toLowerCase();
+  const main = document.getElementById("q");
+  if(fromTop) main.value = top.value; else top.value = main.value;
+  const q = main.value.trim().toLowerCase();
   const url = new URL(location); q?url.searchParams.set("q",q):url.searchParams.delete("q");
   // se está na página "ver todas", permanece nela (regenera tudo com o novo termo)
   const inAll = document.getElementById("resultsPage").style.display === "block";
@@ -264,6 +266,7 @@ function doSearchFromTop(){ doSearch(); }
 function goHome(){
   document.getElementById("resultsPage").style.display = "none";
   document.getElementById("homePage").style.display = "";
+  document.getElementById("q").value = "";
   document.getElementById("qTop").value = "";
   const url = new URL(location); url.searchParams.delete("q");
   history.replaceState(null,"",url.pathname + url.search);
@@ -431,7 +434,7 @@ function searchRows(term){
 }
 
 function render(){
-  const term = document.getElementById("qTop").value.trim();
+  const term = document.getElementById("q").value.trim();
   const hasQuery = term.length > 0;
   document.getElementById("topSection").style.display = hasQuery ? "none" : "";
   document.getElementById("searchSection").style.display = hasQuery ? "" : "none";
@@ -460,7 +463,8 @@ function render(){
 
 function openAll(){
   // recalcula os resultados com o termo ATUAL — ordenados por RELEVÂNCIA
-  const term = document.getElementById("qTop").value.trim();
+  const term = (document.getElementById("qTop").value || document.getElementById("q").value).trim();
+  document.getElementById("q").value = term;
   const rows = searchRows(term);
   const q = term;
   const lojas = [...new Set(rows.map(o=>o.s))];
@@ -525,10 +529,10 @@ function openAll(){
         <input type="range" id="priceMax" class="prange" min="${Math.floor(min)}" max="${Math.ceil(max)}" value="${Math.ceil(max)}" step="1">
       </div>
       <div class="range-vals"><span id="pMinLbl"></span><span id="pMaxLbl"></span></div>
-      <h3>Loja</h3><div id="fLoja">${lojas.map(l=>`<label><input type="checkbox" class="f-loja" value="${l}"> ${l}</label>`).join("")}</div>
-      <h3>Marca</h3><div id="fMarca">${marcas.map(m=>`<label><input type="checkbox" class="f-marca" value="${m}"> ${m.charAt(0).toUpperCase()+m.slice(1)}</label>`).join("")}</div>
-      <h3>Categoria</h3><div id="fCat">${cats.map(c=>`<label><input type="checkbox" class="f-cat" value="${c}"> ${c.charAt(0).toUpperCase()+c.slice(1)}</label>`).join("")}</div>
-      <h3>Condição</h3><div id="fCond">${conds.map(c=>`<label><input type="checkbox" class="f-cond" value="${c}"> ${c==="novo"?"Novo":c==="usado"?"Usado":"Seminovo/Open-box"}</label>`).join("")}</div>
+      <h3>Loja</h3><div id="fLoja">${lojas.map(l=>`<label><input type="checkbox" class="f-loja" value="${l}" checked> ${l}</label>`).join("")}</div>
+      <h3>Marca</h3><div id="fMarca">${marcas.map(m=>`<label><input type="checkbox" class="f-marca" value="${m}" checked> ${m.charAt(0).toUpperCase()+m.slice(1)}</label>`).join("")}</div>
+      <h3>Categoria</h3><div id="fCat">${cats.map(c=>`<label><input type="checkbox" class="f-cat" value="${c}" checked> ${c.charAt(0).toUpperCase()+c.slice(1)}</label>`).join("")}</div>
+      <h3>Condição</h3><div id="fCond">${conds.map(c=>`<label><input type="checkbox" class="f-cond" value="${c}" checked> ${c==="novo"?"Novo":c==="usado"?"Usado":"Seminovo/Open-box"}</label>`).join("")}</div>
       ${keywords.length?`<h3>Palavras-chave</h3><div id="fKw">${keywords.map(k=>`<label><input type="checkbox" class="f-kw" value="${k}"> ${k.charAt(0).toUpperCase()+k.slice(1)}</label>`).join("")}</div>`:""}
       <button class="clear" onclick="resetF()">Limpar filtros</button>
       <button class="clear" onclick="closeAll()">← Voltar à busca</button>
@@ -593,6 +597,7 @@ function closeAll(){
   document.getElementById("resultsPage").style.display = "none";
   document.getElementById("homePage").style.display = "";
   // volta limpo, como recém-aberto
+  document.getElementById("q").value = "";
   const url = new URL(location); url.searchParams.delete("q");
   history.replaceState(null,"",url.pathname + url.search);
   render();
@@ -611,7 +616,8 @@ window.addEventListener("popstate", (e)=>{
     // voltou: fecha a página de resultados e volta pra home
     document.getElementById("resultsPage").style.display = "none";
     document.getElementById("homePage").style.display = "";
-      const url = new URL(location); url.searchParams.delete("q");
+    document.getElementById("q").value = "";
+    const url = new URL(location); url.searchParams.delete("q");
     history.replaceState(null,"",url.pathname + url.search);
     render();
     const s = document.getElementById("pcbSug"); if(s) s.style.display = "";
@@ -621,24 +627,33 @@ window.addEventListener("popstate", (e)=>{
 
 function applyAll(){
   const rows = window.__allPageRows || [];
-  // MARCADO = restringe pra aquilo; desmarcado = sem filtro
-  const lojaSel = new Set([...document.querySelectorAll("#resultsPage .f-loja:checked")].map(i=>i.value));
-  const marcaSel = new Set([...document.querySelectorAll("#resultsPage .f-marca:checked")].map(i=>i.value));
-  const catSel = new Set([...document.querySelectorAll("#resultsPage .f-cat:checked")].map(i=>i.value));
-  const condSel = new Set([...document.querySelectorAll("#resultsPage .f-cond:checked")].map(i=>i.value));
+  // estado atual dos filtros
+  const lojaBoxes=[...document.querySelectorAll("#resultsPage .f-loja")];
+  const marcaBoxes=[...document.querySelectorAll("#resultsPage .f-marca")];
+  const catBoxes=[...document.querySelectorAll("#resultsPage .f-cat")];
+  const condBoxes=[...document.querySelectorAll("#resultsPage .f-cond")];
   const kws=[...document.querySelectorAll("#resultsPage .f-kw:checked")].map(i=>i.value);
   const pMin=+document.getElementById("priceMin").value;
   const pMax=+document.getElementById("priceMax").value;
   const sort=document.getElementById("sortSel")?.value||"best";
 
-  // 1) filtra (só restringe se houver pelo menos um marcado)
-  const passes = o=>
-    (!lojaSel.size || lojaSel.has(o.s))
-    && (!marcaSel.size || marcaSel.has(o._marca))
-    && (!catSel.size || catSel.has(o._cat))
-    && (!condSel.size || condSel.has(o._cond))
-    && (!kws.length || kws.some(k=>o.t.toLowerCase().includes(k)))
-    && o.p>=pMin && o.p<=pMax;
+  // 1) filtra
+  const passes = o=>{
+    const lojaTouched = lojaBoxes.some(i=>!i.checked);
+    const marcaTouched = marcaBoxes.some(i=>!i.checked);
+    const catTouched = catBoxes.some(i=>!i.checked);
+    const condTouched = condBoxes.some(i=>!i.checked);
+    const lojaSel = new Set(lojaBoxes.filter(i=>i.checked).map(i=>i.value));
+    const marcaSel = new Set(marcaBoxes.filter(i=>i.checked).map(i=>i.value));
+    const catSel = new Set(catBoxes.filter(i=>i.checked).map(i=>i.value));
+    const condSel = new Set(condBoxes.filter(i=>i.checked).map(i=>i.value));
+    const kwOk=!kws.length||kws.some(k=>o.t.toLowerCase().includes(k));
+    return (!lojaTouched||lojaSel.has(o.s))
+      && (!marcaTouched||marcaSel.has(o._marca))
+      && (!catTouched||catSel.has(o._cat))
+      && (!condTouched||condSel.has(o._cond))
+      && kwOk && o.p>=pMin && o.p<=pMax;
+  };
   let visiveis = rows.filter(passes);
 
   // 2) ordena os visíveis
@@ -683,14 +698,17 @@ function priceSliderInit(){
   upd();
 }
 function resetF(){
-  document.querySelectorAll("#resultsPage .side input[type=checkbox]").forEach(i=>i.checked=false);
+  document.querySelectorAll("#resultsPage .side input[type=checkbox]").forEach(i=>i.checked=true);
   const minI=document.getElementById("priceMin"),maxI=document.getElementById("priceMax");
   minI.value=minI.min; maxI.value=minI.max;
   priceSliderInit();
 }
 
+// sincroniza o campo do topbar quando digita no principal
+document.getElementById("q").addEventListener("input", ()=>{ document.getElementById("qTop").value = document.getElementById("q").value; });
 
 document.getElementById("meta").textContent = "Ofertas atualizadas em " + (window.OFERTAS.updated||"").slice(0,10).split("-").reverse().join("/");
+document.getElementById("q").addEventListener("keydown", e=>{ if(e.key==="Enter") doSearch(); });
 renderFilters();
 renderTop();
 renderAffiliates();
