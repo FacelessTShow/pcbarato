@@ -262,22 +262,77 @@ function render(){
 function openAll(){
   const rows = window.__allRows || [];
   const w = window.open("", "_blank");
-  const cards = rows.map(o=>
-    '<div class="card"><div class="t">'+o.t+'</div><div class="s">'+o.s+'</div>'
-    + '<div class="price">R$ '+o.p.toFixed(2).replace(".",",")+'</div>'
-    + '<a class="go" href="'+o.u+'" target="_blank" rel="nofollow noopener sponsored">Ver oferta</a></div>'
-  ).join("");
-  w.document.write('<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
-    + '<title>PCBarato — todos os resultados</title><style>'
-    + 'body{background:#0b0f14;color:#d8e1ec;font-family:Segoe UI,system-ui,Arial,sans-serif;margin:0;padding:24px}'
-    + 'h1{font-size:22px}p{color:#7d8da1;font-size:14px}'
-    + '.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;margin-top:18px}'
-    + '.card{background:#121821;border:1px solid #223042;border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:8px}'
-    + '.t{font-size:13px;line-height:1.45;flex:1}.s{font-size:12px;color:#7d8da1}'
-    + '.price{font-size:20px;font-weight:700;color:#3ecf6e}'
-    + '.go{background:#1a2636;border:1px solid #223042;border-radius:10px;padding:9px 0;text-align:center;color:#4f8cff;text-decoration:none;font-size:14px}'
-    + '</style></head><body><h1>🔍 Todos os resultados — PCBarato</h1><p>'+rows.length+' ofertas · ordenadas por menor preço à vista</p>'
-    + '<div class="grid">'+cards+'</div></body></html>');
+  const q = document.getElementById("q").value.trim();
+  const lojas = [...new Set(rows.map(o=>o.s))];
+  // faixas de preço baseadas nos dados
+  const prices = rows.map(o=>o.p);
+  const min = Math.min(...prices), max = Math.max(...prices);
+  const step = (max-min)/4;
+  const faixas = [];
+  for(let i=0;i<4;i++){
+    const a = Math.round(min+step*i), b = Math.round(min+step*(i+1));
+    faixas.push([i, "R$ "+a.toLocaleString("pt-BR")+" – "+(i===3?"R$ "+b.toLocaleString("pt-BR")+" +":"R$ "+b.toLocaleString("pt-BR")), a, i===3?Infinity:b]);
+  }
+  w.document.write(`<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PCBarato — todos os resultados</title><style>
+body{background:#0b0f14;color:#d8e1ec;font-family:Segoe UI,system-ui,Arial,sans-serif;margin:0;display:flex}
+.side{width:230px;min-width:230px;background:#10161f;border-right:1px solid #223042;padding:18px;max-height:100vh;overflow-y:auto;position:sticky;top:0;height:100vh;box-sizing:border-box}
+.side h3{font-size:13px;color:#7d8da1;margin:18px 0 8px;text-transform:uppercase;letter-spacing:.5px}
+.side h3:first-child{margin-top:0}
+.side label{display:flex;align-items:center;gap:7px;font-size:13px;padding:3px 0;cursor:pointer;color:#d8e1ec}
+.side input[type=checkbox]{accent-color:#4f8cff}
+.main{flex:1;padding:24px;box-sizing:border-box}
+h1{font-size:22px;margin:0 0 4px}
+p.sub{color:#7d8da1;font-size:14px;margin:0 0 16px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}
+.card{background:#121821;border:1px solid #223042;border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:8px}
+.t{font-size:13px;line-height:1.45;flex:1}.s{font-size:12px;color:#7d8da1}
+.price{font-size:20px;font-weight:700;color:#3ecf6e}
+.go{background:#1a2636;border:1px solid #223042;border-radius:10px;padding:9px 0;text-align:center;color:#4f8cff;text-decoration:none;font-size:14px}
+.nores{color:#7d8da1;margin-top:30px;display:none}
+.clear{background:none;border:1px solid #223042;color:#7d8da1;border-radius:8px;padding:5px 12px;font-size:12px;cursor:pointer;margin-top:14px}
+@media(max-width:760px){.side{position:static;width:auto;height:auto;max-height:none}.body{flex-direction:column}}
+</style></head><body>
+<div class="side">
+  <h3>Loja</h3><div id="fLoja">${lojas.map(l=>`<label><input type="checkbox" class="f-loja" value="${l}" checked> ${l}</label>`).join("")}</div>
+  <h3>Preço</h3><div id="fPreco">${faixas.map(f=>`<label><input type="checkbox" class="f-preco" data-min="${f[2]}" data-max="${f[3]}" checked> ${f[1]}</label>`).join("")}</div>
+  <h3>Marca</h3><div id="fMarca"></div>
+  <button class="clear" onclick="resetF()">Limpar filtros</button>
+</div>
+<div class="main">
+  <h1>🔍 Todos os resultados — PCBarato</h1>
+  <p class="sub">${rows.length} ofertas${q?" para &quot;"+q+"&quot;":""} · ordenadas por menor preço à vista · <span id="visCount"></span> visíveis</p>
+  <div class="grid" id="grid"></div>
+  <p class="nores" id="nores">Nenhuma oferta com esses filtros.</p>
+</div>
+<script>
+const ROWS = ${JSON.stringify(rows)};
+const marcas = [...new Set(ROWS.map(o=>(o.t.match(/(msi|gigabyte|asus|asrock|zotac|inno3d|galax|gainward|pny|colorful|powercolor|sapphire|corsair|kingston|kingston fury|xpg|adata|crucial|sandisk|wd|seagate|evga|nv|amd|intel|logitech|redragon|hyperx|razer|multilaser|rise mode|pulsetech|aigo|noctua|coolermaster|coolermaster|deepcool|pegasus|thermalright)/i)||[null,"Outra"])[1].toLowerCase()))];
+document.getElementById("fMarca").innerHTML = marcas.map(m=>`<label><input type="checkbox" class="f-marca" value="${m}" checked> ${m.charAt(0).toUpperCase()+m.slice(1)}</label>`).join("");
+function resetF(){document.querySelectorAll(".side input").forEach(i=>i.checked=true);apply();}
+document.querySelectorAll(".side input").forEach(i=>i.addEventListener("change",apply));
+function apply(){
+  const lojas=new Set([...document.querySelectorAll(".f-loja:checked")].map(i=>i.value));
+  const marcas=new Set([...document.querySelectorAll(".f-marca:checked")].map(i=>i.value));
+  const faixas=[...document.querySelectorAll(".f-preco:checked")].map(i=>[+i.dataset.min,+i.dataset.max]);
+  let vis=0;
+  document.querySelectorAll(".card").forEach((c,idx)=>{
+    const o=ROWS[idx];
+    const marcaOk=[...marcas].some(m=>o.t.toLowerCase().includes(m));
+    const precoOk=faixas.some(([a,b])=>o.p>=a&&o.p<=b);
+    const ok=lojas.has(o.s)&&marcaOk&&precoOk;
+    c.style.display=ok?"":"none"; if(ok)vis++;
+  });
+  document.getElementById("visCount").textContent=vis;
+  document.getElementById("nores").style.display=vis?"none":"block";
+}
+const grid=document.getElementById("grid");
+grid.innerHTML = ROWS.map(o=>
+  '<div class="card"><div class="t">'+o.t+'</div><div class="s">'+o.s+'</div>'
+  + '<div class="price">R$ '+o.p.toFixed(2).replace(".",",")+'</div>'
+  + '<a class="go" href="'+o.u+'" target="_blank" rel="nofollow noopener sponsored">Ver oferta</a></div>').join("");
+apply();
+</script></body></html>`);
   w.document.close();
 }
 
