@@ -338,6 +338,10 @@ function openAll(){
   document.querySelectorAll("#resultsPage .side input").forEach(i=>i.addEventListener("change",applyAll));
   applyAll();
   window.scrollTo(0,0);
+  // empurra estado no histórico: botão voltar (mouse 4/5) funciona
+  if(location.hash !== "#todas"){
+    history.pushState({view:"todas"}, "", "#todas");
+  }
 }
 
 function closeAll(){
@@ -346,11 +350,31 @@ function closeAll(){
   // volta limpo, como recém-aberto
   document.getElementById("q").value = "";
   const url = new URL(location); url.searchParams.delete("q");
-  history.replaceState(null,"",url);
+  history.replaceState(null,"",url.pathname + url.search);
   render();
   const s = document.getElementById("pcbSug"); if(s) s.style.display = "";
   window.scrollTo(0,0);
+  // consome o estado "#todas" do histórico pra próxima entrada funcionar
+  if(location.hash === "#todas") history.back();
 }
+
+// botão voltar/avançar (mouse 4/5, teclas, botão do navegador)
+window.addEventListener("popstate", (e)=>{
+  if(location.hash === "#todas" && window.__allPageRows){
+    // avançou para "todas": mostra se estava oculto
+    if(document.getElementById("resultsPage").style.display === "none") openAll();
+  } else {
+    // voltou: fecha a página de resultados e volta pra home
+    document.getElementById("resultsPage").style.display = "none";
+    document.getElementById("homePage").style.display = "";
+    document.getElementById("q").value = "";
+    const url = new URL(location); url.searchParams.delete("q");
+    history.replaceState(null,"",url.pathname + url.search);
+    render();
+    const s = document.getElementById("pcbSug"); if(s) s.style.display = "";
+    window.scrollTo(0,0);
+  }
+});
 
 function applyAll(){
   const rows = window.__allPageRows || [];
