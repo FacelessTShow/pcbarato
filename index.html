@@ -533,7 +533,7 @@ function openAll(){
       <h3>Marca</h3><div id="fMarca">${marcas.map(m=>`<label><input type="checkbox" class="f-marca" value="${m}" checked> ${m.charAt(0).toUpperCase()+m.slice(1)}</label>`).join("")}</div>
       <h3>Categoria</h3><div id="fCat">${cats.map(c=>`<label><input type="checkbox" class="f-cat" value="${c}" checked> ${c.charAt(0).toUpperCase()+c.slice(1)}</label>`).join("")}</div>
       <h3>Condição</h3><div id="fCond">${conds.map(c=>`<label><input type="checkbox" class="f-cond" value="${c}" checked> ${c==="novo"?"Novo":c==="usado"?"Usado":"Seminovo/Open-box"}</label>`).join("")}</div>
-      ${keywords.length?`<h3>Palavras-chave</h3><div id="fKw">${keywords.map(k=>`<label><input type="checkbox" class="f-kw" value="${k}"> ${k}</label>`).join("")}</div>`:""}
+      ${keywords.length?`<h3>Palavras-chave</h3><div id="fKw">${keywords.map(k=>`<label><input type="checkbox" class="f-kw" value="${k}"> ${k.charAt(0).toUpperCase()+k.slice(1)}</label>`).join("")}</div>`:""}
       <button class="clear" onclick="resetF()">Limpar filtros</button>
       <button class="clear" onclick="closeAll()">← Voltar à busca</button>
     </div>
