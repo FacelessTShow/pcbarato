@@ -245,14 +245,17 @@ function renderFilters(){
 }
 
 function doSearch(){
-  // sincroniza os dois campos de busca
-  const fromTop = document.activeElement === document.getElementById("qTop");
   const top = document.getElementById("qTop");
   const q = top.value.trim().toLowerCase();
   const url = new URL(location); q?url.searchParams.set("q",q):url.searchParams.delete("q");
-  // se está na página "ver todas", permanece nela (regenera tudo com o novo termo)
   const inAll = document.getElementById("resultsPage").style.display === "block";
   history.replaceState(null,"",url.pathname + url.search + (inAll ? "#todas" : ""));
+  if(!q){
+    // vazio → mostra TODOS os produtos
+    window.__allRows = null;
+    openAll();
+    return;
+  }
   if(inAll){
     window.__allRows = null; // força recalcular com o novo termo
     openAll();
@@ -426,7 +429,14 @@ function scoreRelevance(o, terms, all){
 
 function searchRows(term){
   const terms = term.toLowerCase().split(/\s+/).filter(Boolean);
-  let rows = ALL.filter(o=> selLojas.has(o.s) && terms.every(t=> o.t.toLowerCase().includes(t)));
+  let rows;
+  if(!terms.length){
+    rows = ALL.filter(o=> selLojas.has(o.s));
+    rows.forEach(o=>{ o._score = 0; });
+    rows.sort((a,b)=> a.p - b.p);
+    return rows;
+  }
+  rows = ALL.filter(o=> selLojas.has(o.s) && terms.every(t=> o.t.toLowerCase().includes(t)));
   rows.forEach(o=>{ o._score = scoreRelevance(o, terms, rows); });
   rows.sort((a,b)=> (b._score - a._score) || (a.p - b.p));
   return rows;
