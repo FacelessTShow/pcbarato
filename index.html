@@ -220,9 +220,9 @@ const LOJAS = [...new Set(ALL.map(o=>o.s))];
 let selLojas = new Set(LOJAS);
 
 const params = new URLSearchParams(location.search);
-const q0 = (params.get("q")||"").toLowerCase();
-document.getElementById("q").value = q0;
-document.getElementById("q").placeholder = 'Ex.: rtx 5060, ryzen 5 5600, ssd 1tb…';
+// busca é efêmera: F5 reseta sempre (limpa o ?q= da URL na carga)
+if(params.get("q")) history.replaceState(null,"",location.pathname);
+const q0 = "";
 
 function renderFilters(){
   const f = document.getElementById("filters");
@@ -244,11 +244,15 @@ function doSearch(){
   if(fromTop) main.value = top.value; else top.value = main.value;
   const q = main.value.trim().toLowerCase();
   const url = new URL(location); q?url.searchParams.set("q",q):url.searchParams.delete("q");
-  history.replaceState(null,"",url.pathname + url.search);
-  // se estava na página "ver todas", volta pra home com a busca aplicada
-  document.getElementById("resultsPage").style.display = "none";
-  document.getElementById("homePage").style.display = "";
-  render();
+  // se está na página "ver todas", permanece nela (recarrega os resultados com o novo termo)
+  const inAll = document.getElementById("resultsPage").style.display === "block";
+  if(!inAll){
+    history.replaceState(null,"",url.pathname + url.search);
+    render();
+  } else {
+    history.replaceState(null,"",url.pathname + url.search + "#todas");
+    openAll();  // regenera tudo (top3 + grid + filtros) com o novo termo
+  }
 }
 
 function doSearchFromTop(){ doSearch(); }
