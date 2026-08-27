@@ -270,6 +270,12 @@ function render(){
   const terms = document.getElementById("q").value.trim().toLowerCase().split(/\s+/).filter(Boolean);
   let rows = ALL.filter(o=> selLojas.has(o.s) && terms.every(t=> o.t.toLowerCase().includes(t)));
   rows.sort((a,b)=>a.p-b.p);
+  // se o termo parece componente (nvme, ssd, fonte, placa...), exclui PCs montados
+  const COMPONENT_WORDS = /(nvme|ssd|hdd|fonte|placa|processador|memoria|mem(ó|o)ria|cooler|gabinete|teclado|mouse|headset|monitor|controle|pasta t(é|e)rmica|webcam|roteador|cabo)/i;
+  if(terms.length && COMPONENT_WORDS.test(terms.join(" "))){
+    const filtered = rows.filter(o=> !/pc gamer|pc montado|computador completo|desktop completo/i.test(o.t));
+    if(filtered.length) rows = filtered;
+  }
   document.getElementById("count").textContent = rows.length + " ofertas encontradas";
   const list = document.getElementById("list");
   list.innerHTML = "";
