@@ -27,6 +27,23 @@
   .chip.sel{border-color:var(--accent);color:var(--accent)}
   .count{color:var(--dim);font-size:14px;margin:0 0 12px 4px}
   .list{display:grid;gap:10px}
+  .sec-title{font-size:19px;margin:26px 0 12px}
+  .sec-sub{color:var(--dim);font-size:13px;margin:-6px 0 12px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:8px;transition:border-color .15s}
+  .card:hover{border-color:#3a5a8a}
+  .card .badge{font-size:11px;color:var(--gold);font-weight:700}
+  .card .t{font-size:13px;color:var(--text);line-height:1.45;flex:1;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+  .card .s{font-size:12px;color:var(--dim)}
+  .card .price{font-size:20px;font-weight:700;color:var(--green)}
+  .card .go{background:#1a2636;border:1px solid var(--border);border-radius:10px;padding:9px 0;text-align:center;color:var(--accent);text-decoration:none;font-size:14px}
+  .card .go:hover{border-color:var(--accent)}
+  .aff{align-items:center;text-align:center}
+  .aff .logo{font-size:34px}
+  .aff .name{font-size:15px;font-weight:700;color:var(--text)}
+  .aff .desc{font-size:12px;color:var(--dim);flex:1}
+  .aff.soon{opacity:.55}
+  .aff .soon-tag{font-size:11px;color:var(--gold)}
   .item{display:flex;align-items:center;gap:14px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 16px;transition:border-color .15s}
   .item:hover{border-color:#3a5a8a}
   .price{font-size:19px;font-weight:700;color:var(--green);white-space:nowrap;min-width:110px}
@@ -81,9 +98,18 @@
   </div>
   <div class="meta" id="meta"></div>
   <div class="filters" id="filters"></div>
+
+  <h2 class="sec-title">🔥 Top ofertas por categoria</h2>
+  <div class="grid" id="topGrid"></div>
+
+  <h2 class="sec-title" id="resTitle">🔍 Resultados da busca</h2>
   <p class="count" id="count"></p>
-  <div class="list" id="list"></div>
+  <div class="grid" id="list"></div>
   <div class="empty" id="empty" style="display:none">Nenhuma oferta encontrada. Tente outro termo (ex.: "rtx 5060").</div>
+
+  <h2 class="sec-title">🏬 Lojas parceiras</h2>
+  <p class="sec-sub">Comprar por esses links apoia o PCBarato — não custa nada a mais pra você 💙</p>
+  <div class="grid" id="affGrid"></div>
 
   <footer>
     PCBarato © 2026 · Preços atualizados automaticamente · Alguns links são de afiliados — não custa nada a mais para você e mantém o projeto vivo 💙<br><br>
@@ -132,6 +158,65 @@ function doSearch(){
   render();
 }
 
+function card(o, badge){
+  const d = document.createElement("div");
+  d.className = "card";
+  d.innerHTML = (badge?'<div class="badge">'+badge+'</div>':'')
+    + '<div class="t" title="'+o.t.replace(/"/g,"&quot;")+'">'+o.t+'</div>'
+    + '<div class="s">'+o.s+'</div>'
+    + '<div class="price">R$ '+o.p.toFixed(2).replace(".",",")+'</div>'
+    + '<a class="go" href="'+o.u+'" target="_blank" rel="nofollow noopener sponsored">Ver oferta</a>';
+  return d;
+}
+
+// CATEGORIAS: top 1 mais barato de cada
+const CATS = [
+  ["🎮 GPU", /rtx|gtx|arc|radeon|placa de v(í|i)deo/i],
+  ["🧠 CPU", /ryzen|core i[3579]|processador/i],
+  ["🔧 Placa-mãe", /placa m(ã|a)e|b\d{3}|a\d{3}m|z\d{3}|b\d{3}m/i],
+  ["💾 RAM", /mem(ó|o)ria|ddr[45]|dimm|so-dimm/i],
+  ["🗄️ SSD/HDD", /\bssd\b|\bhdd\b|nvme|sata|m\.2|hd interno/i],
+  ["⚡ Fonte", /fonte|psu|wats?\b|80 plus/i],
+];
+function renderTop(){
+  const g = document.getElementById("topGrid");
+  g.innerHTML = "";
+  CATS.forEach(([label, rx])=>{
+    const cands = ALL.filter(o=> rx.test(o.t));
+    if(!cands.length) return;
+    const best = cands.sort((a,b)=>a.p-b.p)[0];
+    const c = card(best, label + " — mais barata");
+    g.appendChild(c);
+  });
+}
+
+function renderAffiliates(){
+  const g = document.getElementById("affGrid");
+  g.innerHTML = "";
+  const AFF = [
+    ["amazon","🛒","Amazon","Milhões de produtos, entrega rápida — links monetizados ✅", null],
+    ["kabum","🎮","KaBuM!","A loja gamer brasileira — aguardando aprovação Awin", "breve"],
+    ["aliexpress","📦","AliExpress","Ofertas da China com cupom — aprovação em andamento", "breve"],
+    ["shopee","🛍️","Shopee","Tudo e barato — API em liberação", "breve"],
+    ["mercadolivre","🟡","Mercado Livre","O marketplace líder — app em certificação", "breve"],
+    ["pichau","🖥️","Pichau","Hardware gamer direto da fábrica", null],
+  ];
+  AFF.forEach(([id,logo,name,desc,soon])=>{
+    const d = document.createElement("div");
+    d.className = "card aff" + (soon?" soon":"");
+    d.innerHTML = '<div class="logo">'+logo+'</div><div class="name">'+name+'</div>'
+      + '<div class="desc">'+desc+'</div>'
+      + (soon ? '<span class="soon-tag">⏳ '+soon+'</span>' : '<a class="go" href="'+AFF_LINKS[id]+'" target="_blank" rel="nofollow noopener sponsored">Ir à loja</a>');
+    g.appendChild(d);
+  });
+}
+
+// links de afiliado por loja (placeholder até as aprovações chegarem)
+const AFF_LINKS = {
+  amazon: "https://www.amazon.com.br/?tag=pcbarato05-20",
+  pichau: "https://www.pichau.com.br",
+};
+
 function render(){
   const terms = document.getElementById("q").value.trim().toLowerCase().split(/\s+/).filter(Boolean);
   let rows = ALL.filter(o=> selLojas.has(o.s) && terms.every(t=> o.t.toLowerCase().includes(t)));
@@ -140,19 +225,14 @@ function render(){
   document.getElementById("empty").style.display = rows.length ? "none" : "block";
   const list = document.getElementById("list");
   list.innerHTML = "";
-  rows.slice(0,100).forEach((o,i)=>{
-    const d = document.createElement("div");
-    d.className = "item" + (i===0?" best":"");
-    d.innerHTML = '<div class="price">R$ '+o.p.toFixed(2).replace(".",",")+'</div>'
-      + '<div class="body"><div class="t" title="'+o.t.replace(/"/g,"&quot;")+'">'+o.t+'</div><div class="s">'+o.s+'</div></div>'
-      + '<a class="go" href="'+o.u+'" target="_blank" rel="nofollow noopener">Ver oferta</a>';
-    list.appendChild(d);
-  });
+  rows.slice(0,24).forEach(o=> list.appendChild(card(o)));
 }
 
 document.getElementById("meta").textContent = "Atualizado em " + (window.OFERTAS.updated||"").replace("T"," às ").slice(0,16) + " · dados coletados do seu PC";
 document.getElementById("q").addEventListener("keydown", e=>{ if(e.key==="Enter") doSearch(); });
 renderFilters();
+renderTop();
+renderAffiliates();
 render();
 
 // PcB IA widget
