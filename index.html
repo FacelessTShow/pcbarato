@@ -53,6 +53,13 @@
   .pcb-input input:focus{border-color:var(--accent)}
   .pcb-input button{background:var(--accent);border:none;border-radius:10px;padding:0 14px;color:#fff;cursor:pointer;font-size:14px}
   .pcb-foot{font-size:11px;color:var(--dim);margin-top:8px;text-align:center}
+  .pcb-msg{max-width:88%;padding:9px 12px;border-radius:12px;font-size:13px;margin-bottom:8px;white-space:pre-wrap;line-height:1.5}
+  .pcb-msg.bot{background:#0e1420;border:1px solid var(--border);color:var(--text);border-bottom-left-radius:4px}
+  .pcb-msg.user{background:#2b4a7a;color:#fff;margin-left:auto;border-bottom-right-radius:4px}
+  .pcb-msg a{color:var(--accent)}
+  .pcb-chat{display:flex;flex-direction:column;max-height:340px;overflow-y:auto;margin-bottom:10px}
+  .pcb-tg{display:block;text-align:center;margin-top:6px;font-size:12px;color:var(--accent);text-decoration:none;cursor:pointer}
+
 
 </style>
 </head>
@@ -88,15 +95,12 @@
 <button class="pcb-fab" id="pcbFab" title="Falar com a PcB IA">🤖</button>
 <div class="pcb-panel" id="pcbPanel">
   <h3>🤖 PcB IA</h3>
-  <p>Me diz teu setup ou o que procuras que eu recomendo o melhor upgrade e onde tá mais barato:</p>
-  <button class="pcb-q" onclick="pcbAsk('Quero rodar jogos em 1440p, meu setup é um i5 9400F com GTX 1660. Qual upgrade vale mais a pena?')">🎮 "Quero jogar em 1440p, tenho i5 9400F + GTX 1660"</button>
-  <button class="pcb-q" onclick="pcbAsk('Qual a RTX 5060 mais barata agora e onde compro?')">💸 "RTX 5060 mais barata agora?"</button>
-  <button class="pcb-q" onclick="pcbAsk('Tenho R$ 3000 pra montar um PC gamer básico. O que você sugere?')">🖥️ "R$ 3000 pra PC gamer básico"</button>
+  <div class="pcb-chat" id="pcbChat"></div>
   <div class="pcb-input">
-    <input id="pcbText" placeholder="Ou escreve tua pergunta…" onkeydown="if(event.key==='Enter')pcbSend()">
+    <input id="pcbText" placeholder="Ex.: tenho R$ 2500, quero jogar em 1440p…" onkeydown="if(event.key==='Enter')pcbSend()">
     <button onclick="pcbSend()">➤</button>
   </div>
-  <div class="pcb-foot">O chat abre no Telegram (@AgentPcBbot) · grátis</div>
+  <a class="pcb-tg" onclick="pcbTelegram()">Prefere continuar no Telegram? Abre aqui 💬</a>
 </div>
 
 <script src="ofertas.js"></script>
