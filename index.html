@@ -32,7 +32,7 @@
   .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}
   .card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:8px;transition:border-color .15s;text-align:center;align-items:center}
   .card:hover{border-color:#22d3ee}
-  .card .badge{font-size:11px;color:var(--gold);font-weight:700}
+  .card .badge{font-size:11px;color:var(--gold);font-weight:700;text-transform:uppercase;letter-spacing:.3px}
   .card .t{font-size:13px;color:var(--text);line-height:1.45;flex:1;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;width:100%}
   .card .s{font-size:12px;color:var(--dim)}
   .card .price{font-size:20px;font-weight:700;color:var(--green);width:100%}
@@ -575,7 +575,7 @@ function openAll(){
   const t3 = document.getElementById("top3Grid");
   t3.innerHTML = "";
   rows.slice(0,3).forEach((o,i)=>{
-    const medals = ["🥇 menor preço","🥈 2º menor","🥉 3º menor"];
+    const medals = ["Menor preço","2º Menor preço","3º Menor preço"];
     const c = card(o, medals[i]);
     c.style.cursor = "default";
     t3.appendChild(c);
@@ -625,43 +625,56 @@ window.addEventListener("popstate", (e)=>{
 
 function applyAll(){
   const rows = window.__allPageRows || [];
-  // checkbox DESMARCADO = filtra; todos marcados (ou nenhum tocado) = mostra tudo
+  // estado atual dos filtros
   const lojaBoxes=[...document.querySelectorAll("#resultsPage .f-loja")];
   const marcaBoxes=[...document.querySelectorAll("#resultsPage .f-marca")];
   const catBoxes=[...document.querySelectorAll("#resultsPage .f-cat")];
   const condBoxes=[...document.querySelectorAll("#resultsPage .f-cond")];
-  const touched = b => b.some(i=>!i.checked); // usuário mexeu?
-  const lojaSel = new Set(lojaBoxes.filter(i=>i.checked).map(i=>i.value));
-  const marcaSel = new Set(marcaBoxes.filter(i=>i.checked).map(i=>i.value));
-  const catSel = new Set(catBoxes.filter(i=>i.checked).map(i=>i.value));
-  const condSel = new Set(condBoxes.filter(i=>i.checked).map(i=>i.value));
   const kws=[...document.querySelectorAll("#resultsPage .f-kw:checked")].map(i=>i.value);
   const pMin=+document.getElementById("priceMin").value;
   const pMax=+document.getElementById("priceMax").value;
-  let vis=0;
-  const sorted=[...rows];
   const sort=document.getElementById("sortSel")?.value||"best";
-  if(sort==="price_desc") sorted.sort((a,b)=>b.p-a.p);
-  else if(sort==="az") sorted.sort((a,b)=>a.t.localeCompare(b.t,"pt-BR"));
-  else if(sort==="za") sorted.sort((a,b)=>b.t.localeCompare(a.t,"pt-BR"));
-  else if(sort==="loja") sorted.sort((a,b)=>a.s.localeCompare(b.s,"pt-BR")||a.p-b.p);
-  else if(sort==="best") sorted.sort((a,b)=> (b.s==="Kabum")-(a.s==="Kabum") || a.p-b.p);
-  else sorted.sort((a,b)=>a.p-b.p);
-  const grid=document.getElementById("allGrid");
-  sorted.map(o=> rows.indexOf(o)).forEach(i=> grid.appendChild(grid.children[i]));
-  document.querySelectorAll("#allGrid .card").forEach((c,idx)=>{
-    const o=rows[idx];
-    const lojaOk=!touched(lojaBoxes)||lojaSel.has(o.s);
-    const marcaOk=!touched(marcaBoxes)||marcaSel.has(o._marca);
-    const catOk=!touched(catBoxes)||catSel.has(o._cat);
-    const condOk=!touched(condBoxes)||condSel.has(o._cond);
+
+  // 1) filtra
+  const passes = o=>{
+    const lojaTouched = lojaBoxes.some(i=>!i.checked);
+    const marcaTouched = marcaBoxes.some(i=>!i.checked);
+    const catTouched = catBoxes.some(i=>!i.checked);
+    const condTouched = condBoxes.some(i=>!i.checked);
+    const lojaSel = new Set(lojaBoxes.filter(i=>i.checked).map(i=>i.value));
+    const marcaSel = new Set(marcaBoxes.filter(i=>i.checked).map(i=>i.value));
+    const catSel = new Set(catBoxes.filter(i=>i.checked).map(i=>i.value));
+    const condSel = new Set(condBoxes.filter(i=>i.checked).map(i=>i.value));
     const kwOk=!kws.length||kws.some(k=>o.t.toLowerCase().includes(k));
-    const precoOk=o.p>=pMin&&o.p<=pMax;
-    const ok=lojaOk&&marcaOk&&catOk&&condOk&&kwOk&&precoOk;
-    c.style.display=ok?"":"none"; if(ok)vis++;
-  });
-  document.getElementById("visCount").textContent=vis;
-  document.getElementById("nores").style.display=vis?"none":"block";
+    return (!lojaTouched||lojaSel.has(o.s))
+      && (!marcaTouched||marcaSel.has(o._marca))
+      && (!catTouched||catSel.has(o._cat))
+      && (!condTouched||condSel.has(o._cond))
+      && kwOk && o.p>=pMin && o.p<=pMax;
+  };
+  let visiveis = rows.filter(passes);
+
+  // 2) ordena os visíveis
+  if(sort==="price_desc") visiveis.sort((a,b)=>b.p-a.p);
+  else if(sort==="az") visiveis.sort((a,b)=>a.t.localeCompare(b.t,"pt-BR"));
+  else if(sort==="za") visiveis.sort((a,b)=>b.t.localeCompare(a.t,"pt-BR"));
+  else if(sort==="loja") visiveis.sort((a,b)=>a.s.localeCompare(b.s,"pt-BR")||a.p-b.p);
+  else if(sort==="best") visiveis.sort((a,b)=> (b.s==="Kabum")-(a.s==="Kabum") || a.p-b.p);
+  else visiveis.sort((a,b)=>a.p-b.p);
+
+  // 3) re-renderiza o grid só com os visíveis (na ordem)
+  const grid=document.getElementById("allGrid");
+  grid.innerHTML = visiveis.map(o=>
+    '<div class="card">'
+    + (o.i ? '<img class="pimg" src="'+o.i+'" alt="" loading="lazy" onerror="this.style.display=\'none\'">'
+           : '<div class="pimg ph">🖥️</div>')
+    + '<div class="t" title="'+o.t.replace(/"/g,"&quot;")+'">'+o.t+'</div>'
+    + '<div class="s">'+o.s+'</div>'
+    + '<div class="price">R$ '+o.p.toFixed(2).replace(".",",")+'</div>'
+    + '<a class="go" href="'+o.u+'" target="_blank" rel="nofollow noopener sponsored">Ver oferta</a></div>').join("");
+
+  document.getElementById("visCount").textContent=visiveis.length;
+  document.getElementById("nores").style.display=visiveis.length?"none":"block";
 }
 
 // slider duplo de preço
