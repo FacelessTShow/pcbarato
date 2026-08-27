@@ -200,32 +200,32 @@ function card(o, badge){
 // CATEGORIAS: top 1 mais barato de cada (com exclusões pra não pegar PC montado / item errado)
 const NOT_PC = /pc gamer|pc montado|computador|desktop|kit upgrade|notebook|celular|smartphone/i;
 const CATS = [
-  ["🎮 GPU", /(\brtx\b|\bgtx\b|\barc\b a?[\d]{3,}|radeon rx|placa de v(í|i)deo)/i, /pc gamer|placa m(ã|a)e|notebook/i],
-  ["🧠 CPU", /(ryzen|core i[3579]|processador)/i, /pc gamer|placa|refriger|cooler|notebook/i],
-  ["🔧 Placa-mãe", /(placa m(ã|a)e\b)/i, /pc gamer|notebook/i],
-  ["💾 RAM", /(mem(ó|o)ria (ram|para)|\bddr[45]\b)/i, /pc gamer|placa m(ã|a)e|ssd|notebook|chipset/i],
-  ["🗄️ SSD/HDD", /(ssd|nvme|\bm\.2\b|hd interno|disco (sólido|duplo)|\bhd \d)/i, /pc gamer|gabinete|notebook/i],
-  ["⚡ Fonte", /(fonte\b|psu\b)/i, /pc gamer|cabo|notebook/i],
-  ["❄️ Cooler", /(cooler|water ?cooler|disipador|arctic|deepcool)/i, /pc gamer|notebook|pasta|ventoinha|fan/i],
-  ["🌀 Fans", /(ventoinha|cooler fan|fan \d{2,3}mm|\bfan\b|arctic p\d|stormforce)/i, /pc gamer|notebook|cooler a (ó|o)leo/i],
-  ["🖼️ Gabinete", /(gabinete|case\b|full tower|mid tower)/i, /pc gamer|monitor/i],
-  ["🖥️ Monitor", /(monitor)/i, /pc gamer|suporte/i],
-  ["⌨️ Teclado", /(teclado)/i, /pc gamer|pel(í|i)cula/i],
-  ["🖱️ Mouse", /(mouse(?!pad))/i, /pc gamer/i],
-  ["🎧 Headset/Fone", /(headset|fone de ouvido|earphone|fone gamer|microfone)/i, /pc gamer/i],
-  ["🎮 Controle", /(controle|joystick|gamepad|manete|volante)/i, /pc gamer/i],
-  ["🪭 Mousepad", /(mousepad|mouse pad)/i],
-  ["🧴 Pasta térmica", /(pasta t(é|e)rmica|thermal paste|graxa t(é|e)rmica)/i, /pc gamer/i],
-  ["💨 Limpeza", /(sopro|ar comprimido|kit limpeza|pincel|álcool isoprop(í|i)lico|limpa contato)/i, /pc gamer/i],
-  ["🔌 Cabos & adaptadores", /(cabo hdmi|cabo displayport|cabo usb|cabo sata|cabo de rede|adaptador|extens(ã|a)o usb|hub usb|conector)/i, /pc gamer/i],
-  ["📡 Rede/Wi-Fi", /(roteador|wi-?fi|wireless|adaptador de rede|placa de rede|repetidor|switch de rede)/i, /pc gamer|cabo de rede/i],
-  ["🔊 Caixa de som", /(caixa de som|soundbar|speaker)/i, /pc gamer/i],
-  ["📼 Webcam", /(webcam|c(â|a)mera (para|de) computador)/i, /pc gamer/i],
-  ["💿 Unidade óptica", /(gravador de (dvd|cd)|unidade (ó|o)ptica|dvd-rw)/i, /pc gamer|notebook/i],
-  ["🔋 Ups/bateria", /(\bups\b|nobreak|estabilizador)/i, /pc gamer/i],
-  ["🛠️ Ferramentas", /(kit de ferramentas|chave de precis(ã|a)o|pulseira anti)/i, /pc gamer/i],
-  ["💡 Iluminação", /(fita led|rgb strip|l(â|a)mpada rgb|ilumina(ç|c)(ã|a)o gamer)/i, /pc gamer|gabinete/i],
-  ["🎒 Mochilas & cases", /(mochila (para|de) notebook|case de transporte|capa para notebook)/i, /pc gamer/i],
+  ["🎮 GPU — mais barata", /(\brtx\b|\bgtx\b|\barc\b a?[\d]{3,}|radeon rx|placa de v(í|i)deo)/i, /pc gamer|placa m(ã|a)e|notebook/i],
+  ["🧠 CPU — mais barato", /(ryzen|core i[3579]|processador)/i, /pc gamer|placa|refriger|cooler|notebook/i],
+  ["🔧 Placa-mãe — mais barata", /(placa m(ã|a)e\b)/i, /pc gamer|notebook/i],
+  ["💾 RAM — mais barata", /(mem(ó|o)ria (ram|para)|\bddr[45]\b)/i, /pc gamer|placa m(ã|a)e|ssd|notebook|chipset/i],
+  ["🗄️ SSD — o mais barato", /(ssd|nvme|\bm\.2\b|disco s(ó|o)lido)/i, /pc gamer|gabinete|notebook/i],
+  ["💽 HDD — o mais barato", /(\bhd interno|\bhd \d|disco mec(â|a)nico|\bhdd\b)/i, /pc gamer|gabinete|notebook/i],
+  ["⚡ Fonte — mais barata", /(fonte\b|psu\b)/i, /pc gamer|cabo|notebook/i],
+  ["❄️ Cooler — o mais barato", /(cooler|water ?cooler|disipador|arctic|deepcool)/i, /pc gamer|notebook|pasta|ventoinha|fan/i],
+  ["🌀 Fan — o mais barato", /(ventoinha|cooler fan|fan \d{2,3}mm|\bfan\b|arctic p\d|stormforce)/i, /pc gamer|notebook/i],
+  ["🖼️ Gabinete — o mais barato", /(gabinete|case\b|full tower|mid tower)/i, /pc gamer|monitor/i],
+  ["🖥️ Monitor — o mais barato", /(monitor)/i, /pc gamer|suporte/i],
+  ["⌨️ Teclado — o mais barato", /(teclado)/i, /pc gamer|pel(í|i)cula/i],
+  ["🖱️ Mouse — o mais barato", /(mouse(?!pad))/i, /pc gamer/i],
+  ["🎧 Headset — o mais barato", /(headset|fone de ouvido|earphone|fone gamer|microfone)/i, /pc gamer/i],
+  ["🎮 Controle — o mais barato", /(controle|joystick|gamepad|manete|volante)/i, /pc gamer/i],
+  ["🪭 Mousepad — o mais barato", /(mousepad|mouse pad)/i],
+  ["🧴 Pasta térmica — mais barata", /(pasta t(é|e)rmica|thermal paste|graxa t(é|e)rmica)/i, /pc gamer/i],
+  ["💨 Kit limpeza — o mais barato", /(sopro|ar comprimido|kit limpeza|pincel|álcool isoprop(í|i)lico|limpa contato)/i, /pc gamer/i],
+  ["🔌 Cabo/adaptador — o mais barato", /(cabo hdmi|cabo displayport|cabo usb|cabo sata|cabo de rede|adaptador|extens(ã|a)o usb|hub usb|conector)/i, /pc gamer/i],
+  ["📡 Rede/Wi-Fi — o mais barato", /(roteador|wi-?fi|wireless|adaptador de rede|placa de rede|repetidor|switch de rede)/i, /pc gamer|cabo de rede/i],
+  ["🔊 Caixa de som — mais barata", /(caixa de som|soundbar|speaker)/i, /pc gamer/i],
+  ["📼 Webcam — a mais barata", /(webcam|c(â|a)mera (para|de) computador)/i, /pc gamer/i],
+  ["💿 Unidade óptica — mais barata", /(gravador de (dvd|cd)|unidade (ó|o)ptica|dvd-rw)/i, /pc gamer|notebook/i],
+  ["🔋 Nobreak/UPS — o mais barato", /(\bups\b|nobreak|estabilizador)/i, /pc gamer/i],
+  ["🛠️ Kit ferramentas — o mais barato", /(kit de ferramentas|chave de precis(ã|a)o|pulseira anti)/i, /pc gamer/i],
+  ["💡 Iluminação RGB — mais barata", /(fita led|rgb strip|l(â|a)mpada rgb|ilumina(ç|c)(ã|a)o gamer)/i, /pc gamer|gabinete/i],
 ];
 function renderTop(){
   const g = document.getElementById("topGrid");
@@ -234,7 +234,7 @@ function renderTop(){
     let cands = ALL.filter(o=> rx.test(o.t) && !NOT_PC.test(o.t) && !(notrx && notrx.test(o.t)));
     if(!cands.length) return;
     const best = cands.sort((a,b)=>a.p-b.p)[0];
-    const c = card(best, label + " — mais barata");
+    const c = card(best, label);
     g.appendChild(c);
   });
 }
