@@ -73,6 +73,8 @@
   .allpage .nores{color:var(--dim);margin-top:30px;display:none}
   .allpage .clear{background:none;border:1px solid var(--border);color:var(--dim);border-radius:8px;padding:5px 12px;font-size:12px;cursor:pointer;margin-top:14px;display:block;width:100%}
   .allpage .clear:hover{color:var(--accent);border-color:var(--accent)}
+  .allpage .sortsel{width:100%;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:7px 8px;color:var(--text);font-size:13px;outline:none;margin-top:2px}
+  .allpage .sortsel:focus{border-color:var(--accent)}
   @media(max-width:760px){.allpage{flex-direction:column}.allpage .side{position:static;width:auto;height:auto;max-height:none;border-right:none;border-bottom:1px solid var(--border)}}
   .nores{color:var(--dim);margin-top:30px;display:none}
   .item{display:flex;align-items:center;gap:14px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 16px;transition:border-color .15s}
@@ -436,12 +438,57 @@ function openAll(){
   const marcas = [...new Set(rows.map(o=>(o.t.match(BRAND_RX)||[null,"outra"])[1].toLowerCase()))];
   // marca por item (pré-calculada; "outra" = sem marca conhecida)
   rows.forEach(o=>{ o._marca = (o.t.match(BRAND_RX)||[null,"outra"])[1].toLowerCase(); });
+
+  // condição
+  rows.forEach(o=>{
+    o._cond = /seminovo|semi-novo|open ?box/i.test(o.t) ? "seminovo" : /usado/i.test(o.t) ? "usado" : "novo";
+  });
+  const conds = [...new Set(rows.map(o=>o._cond))];
+
+  // categoria
+  const CAT_RX = [
+    ["gpu", /(\brtx\b|\bgtx\b|\barc\b|radeon rx|placa de v(í|i)deo)/i],
+    ["cpu", /(ryzen|core i[3579]|processador)/i],
+    ["placa-mãe", /placa m(ã|a)e/i],
+    ["ram", /(mem(ó|o)ria|\bddr[45]\b)/i],
+    ["armazenamento", /(ssd|nvme|\bm\.2\b|\bhd\b|hdd)/i],
+    ["fonte", /(fonte\b|psu\b)/i],
+    ["cooler/fan", /(cooler|ventoinha|water ?cooler|\bfan\b)/i],
+    ["gabinete", /(gabinete|case\b)/i],
+    ["monitor", /monitor/i],
+    ["periféricos", /(teclado|mouse|headset|fone|controle|mousepad|webcam|microfone)/i],
+    ["redes", /(roteador|wi-?fi|wireless|adaptador de rede|switch)/i],
+    ["outros", /./],
+  ];
+  rows.forEach(o=>{
+    o._cat = (CAT_RX.find(([,rx])=>rx.test(o.t)) || ["outros"])[0];
+  });
+  const cats = [...new Set(rows.map(o=>o._cat))];
+
+  // palavras-chave frequentes
+  const STOP = new Set(["de","para","com","e","a","o","em","pc","gamer","kit","novo"]);
+  const kwCount = {};
+  rows.forEach(o=> (o.t.toLowerCase().match(/\b[\w.-]{3,}\b/g)||[]).forEach(w=>{
+    if(!STOP.has(w) && !/^\d+$/.test(w)) kwCount[w]=(kwCount[w]||0)+1;
+  }));
+  const keywords = Object.entries(kwCount).filter(([w,c])=>c>=5).sort((a,b)=>b[1]-a[1]).slice(0,10).map(e=>e[0]);
   document.getElementById("resultsPage").innerHTML = `
   <div class="allpage">
     <div class="side">
       <h3>Loja</h3><div id="fLoja">${lojas.map(l=>`<label><input type="checkbox" class="f-loja" value="${l}" checked> ${l}</label>`).join("")}</div>
       <h3>Preço</h3><div id="fPreco">${faixas.map(f=>`<label><input type="checkbox" class="f-preco" data-min="${f[2]}" data-max="${f[3]}" checked> ${f[1]}</label>`).join("")}</div>
       <h3>Marca</h3><div id="fMarca">${marcas.map(m=>`<label><input type="checkbox" class="f-marca" value="${m}" checked> ${m.charAt(0).toUpperCase()+m.slice(1)}</label>`).join("")}</div>
+      <h3>Categoria</h3><div id="fCat">${cats.map(c=>`<label><input type="checkbox" class="f-cat" value="${c}" checked> ${c.charAt(0).toUpperCase()+c.slice(1)}</label>`).join("")}</div>
+      <h3>Condição</h3><div id="fCond">${conds.map(c=>`<label><input type="checkbox" class="f-cond" value="${c}" checked> ${c==="novo"?"Novo":c==="usado"?"Usado":"Seminovo/Open-box"}</label>`).join("")}</div>
+      ${keywords.length?`<h3>Palavras-chave</h3><div id="fKw">${keywords.map(k=>`<label><input type="checkbox" class="f-kw" value="${k}"> ${k}</label>`).join("")}</div>`:""}
+      <h3>Ordenar por</h3>
+      <select id="sortSel" class="sortsel">
+        <option value="price_asc">Menor preço</option>
+        <option value="price_desc">Maior preço</option>
+        <option value="az">Nome (A–Z)</option>
+        <option value="za">Nome (Z–A)</option>
+        <option value="loja">Loja (A–Z)</option>
+      </select>
       <button class="clear" onclick="resetF()">Limpar filtros</button>
       <button class="clear" onclick="closeAll()">← Voltar à busca</button>
     </div>
@@ -465,6 +512,7 @@ function openAll(){
     + '<a class="go" href="'+o.u+'" target="_blank" rel="nofollow noopener sponsored">Ver oferta</a></div>').join("");
   window.__allPageRows = rows;
   document.querySelectorAll("#resultsPage .side input").forEach(i=>i.addEventListener("change",applyAll));
+  const ss=document.getElementById("sortSel"); if(ss) ss.addEventListener("change",applyAll);
   applyAll();
   window.scrollTo(0,0);
   // empurra estado no histórico: botão voltar (mouse 4/5) funciona
@@ -510,12 +558,29 @@ function applyAll(){
   const lojas=new Set([...document.querySelectorAll("#resultsPage .f-loja:checked")].map(i=>i.value));
   const marcas=new Set([...document.querySelectorAll("#resultsPage .f-marca:checked")].map(i=>i.value));
   const faixas=[...document.querySelectorAll("#resultsPage .f-preco:checked")].map(i=>[+i.dataset.min,+i.dataset.max]);
+  const cats=document.querySelectorAll("#resultsPage .f-cat");
+  const conds=document.querySelectorAll("#resultsPage .f-cond");
+  const kws=[...document.querySelectorAll("#resultsPage .f-kw:checked")].map(i=>i.value);
   let vis=0;
+  const sorted=[...rows];
+  const sort=document.getElementById("sortSel")?.value||"price_asc";
+  if(sort==="price_desc") sorted.sort((a,b)=>b.p-a.p);
+  else if(sort==="az") sorted.sort((a,b)=>a.t.localeCompare(b.t,"pt-BR"));
+  else if(sort==="za") sorted.sort((a,b)=>b.t.localeCompare(a.t,"pt-BR"));
+  else if(sort==="loja") sorted.sort((a,b)=>a.s.localeCompare(b.s,"pt-BR")||a.p-b.p);
+  else sorted.sort((a,b)=>a.p-b.p);
+  // reordena os cards no grid
+  const grid=document.getElementById("allGrid");
+  const byIdx = sorted.map(o=> rows.indexOf(o));
+  byIdx.forEach(i=> grid.appendChild(grid.children[i]));
   document.querySelectorAll("#allGrid .card").forEach((c,idx)=>{
     const o=rows[idx];
     const marcaOk=[...marcas].some(m=> m==="outra" ? o._marca==="outra" : o._marca===m);
     const precoOk=faixas.some(([a,b])=>o.p>=a&&o.p<=b);
-    const ok=lojas.has(o.s)&&marcaOk&&precoOk;
+    const catOk=!cats.length||[...cats].some(i=>i.checked&&i.value===o._cat);
+    const condOk=!conds.length||[...conds].some(i=>i.checked&&i.value===o._cond);
+    const kwOk=!kws.length||kws.some(k=>o.t.toLowerCase().includes(k));
+    const ok=lojas.has(o.s)&&marcaOk&&precoOk&&catOk&&condOk&&kwOk;
     c.style.display=ok?"":"none"; if(ok)vis++;
   });
   document.getElementById("visCount").textContent=vis;
