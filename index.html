@@ -334,6 +334,12 @@ function openAll(){
 function closeAll(){
   document.getElementById("resultsPage").style.display = "none";
   document.getElementById("homePage").style.display = "";
+  // volta limpo, como recém-aberto
+  document.getElementById("q").value = "";
+  const url = new URL(location); url.searchParams.delete("q");
+  history.replaceState(null,"",url);
+  render();
+  const s = document.getElementById("pcbSug"); if(s) s.style.display = "";
   window.scrollTo(0,0);
 }
 
