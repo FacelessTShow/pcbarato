@@ -87,7 +87,6 @@
   .prange::-moz-range-thumb{pointer-events:auto;width:14px;height:14px;border-radius:50%;background:var(--accent);border:2px solid #04121a;cursor:pointer}
   .range-vals{display:flex;justify-content:space-between;font-size:12px;color:var(--text)}
   @media(max-width:760px){.allpage{flex-direction:column}.allpage .side{position:static;width:auto;height:auto;max-height:none;border-right:none;border-bottom:1px solid var(--border)}}
-  @media(max-width:700px){.topbar{grid-template-columns:auto 1fr}.topbar .ttag{display:none}}
   .nores{color:var(--dim);margin-top:30px;display:none}
   .item{display:flex;align-items:center;gap:14px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 16px;transition:border-color .15s}
   .item:hover{border-color:#22d3ee}
@@ -102,11 +101,11 @@
   footer a{color:var(--accent);text-decoration:none}
 
   /* header fixo estilo Pichau */
-  .topbar{position:sticky;top:0;z-index:100;background:#101828e6;backdrop-filter:blur(8px);border-bottom:1px solid var(--border);padding:10px 24px;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:18px}
-  .topbar .logo{display:flex;align-items:center;gap:10px;cursor:pointer;text-decoration:none;justify-self:start}
+  .topbar{position:sticky;top:0;z-index:100;background:#101828e6;backdrop-filter:blur(8px);border-bottom:1px solid var(--border);padding:10px 24px;display:flex;align-items:center;gap:18px}
+  .topbar .logo{display:flex;align-items:center;gap:10px;cursor:pointer;text-decoration:none}
   .topbar .logo img{width:34px;height:34px;border-radius:8px}
   .topbar .logo span{font-size:19px;font-weight:800;background:linear-gradient(90deg,#22d3ee,#a78bfa);-webkit-background-clip:text;background-clip:text;color:transparent;white-space:nowrap;line-height:34px}
-  .topbar .tsearch{display:flex;width:100%;max-width:520px;justify-content:center}
+  .topbar .tsearch{flex:1;display:flex;max-width:520px;margin:0 auto}
   .topbar .tsearch input{flex:1;background:var(--card);border:1px solid var(--border);border-radius:10px 0 0 10px;padding:10px 14px;color:var(--text);font-size:14px;outline:none}
   .topbar .tsearch input:focus{border-color:var(--accent)}
   .topbar .tsearch button{background:var(--accent);border:none;border-radius:0 10px 10px 0;padding:0 18px;color:#04121a;font-weight:700;cursor:pointer}
@@ -515,7 +514,7 @@ function openAll(){
   rows.forEach(o=> (o.t.toLowerCase().match(/\b[\w.-]{3,}\b/g)||[]).forEach(w=>{
     if(!STOP.has(w) && !/^\d+$/.test(w)) kwCount[w]=(kwCount[w]||0)+1;
   }));
-  const keywords = Object.entries(kwCount).filter(([w,c])=>c>=5 && !/[ÃÂ]/.test(w)).sort((a,b)=>b[1]-a[1]).slice(0,10).map(e=>e[0]);
+  const keywords = Object.entries(kwCount).filter(([w,c])=>c>=5).sort((a,b)=>b[1]-a[1]).slice(0,10).map(e=>e[0]);
   document.getElementById("resultsPage").innerHTML = `
   <div class="allpage">
     <div class="side">
@@ -526,10 +525,10 @@ function openAll(){
         <input type="range" id="priceMax" class="prange" min="${Math.floor(min)}" max="${Math.ceil(max)}" value="${Math.ceil(max)}" step="1">
       </div>
       <div class="range-vals"><span id="pMinLbl"></span><span id="pMaxLbl"></span></div>
-      <h3>Loja</h3><div id="fLoja">${lojas.map(l=>`<label><input type="checkbox" class="f-loja" value="${l}"> ${l}</label>`).join("")}</div>
-      <h3>Marca</h3><div id="fMarca">${marcas.map(m=>`<label><input type="checkbox" class="f-marca" value="${m}"> ${m.charAt(0).toUpperCase()+m.slice(1)}</label>`).join("")}</div>
-      <h3>Categoria</h3><div id="fCat">${cats.map(c=>`<label><input type="checkbox" class="f-cat" value="${c}"> ${c.charAt(0).toUpperCase()+c.slice(1)}</label>`).join("")}</div>
-      <h3>Condição</h3><div id="fCond">${conds.map(c=>`<label><input type="checkbox" class="f-cond" value="${c}"> ${c==="novo"?"Novo":c==="usado"?"Usado":"Seminovo/Open-box"}</label>`).join("")}</div>
+      <h3>Loja</h3><div id="fLoja">${lojas.map(l=>`<label><input type="checkbox" class="f-loja" value="${l}" checked> ${l}</label>`).join("")}</div>
+      <h3>Marca</h3><div id="fMarca">${marcas.map(m=>`<label><input type="checkbox" class="f-marca" value="${m}" checked> ${m.charAt(0).toUpperCase()+m.slice(1)}</label>`).join("")}</div>
+      <h3>Categoria</h3><div id="fCat">${cats.map(c=>`<label><input type="checkbox" class="f-cat" value="${c}" checked> ${c.charAt(0).toUpperCase()+c.slice(1)}</label>`).join("")}</div>
+      <h3>Condição</h3><div id="fCond">${conds.map(c=>`<label><input type="checkbox" class="f-cond" value="${c}" checked> ${c==="novo"?"Novo":c==="usado"?"Usado":"Seminovo/Open-box"}</label>`).join("")}</div>
       ${keywords.length?`<h3>Palavras-chave</h3><div id="fKw">${keywords.map(k=>`<label><input type="checkbox" class="f-kw" value="${k}"> ${k.charAt(0).toUpperCase()+k.slice(1)}</label>`).join("")}</div>`:""}
       <button class="clear" onclick="resetF()">Limpar filtros</button>
       <button class="clear" onclick="closeAll()">← Voltar à busca</button>
@@ -582,7 +581,6 @@ function openAll(){
   window.__allPageRows = rows;
   document.querySelectorAll("#resultsPage .side input").forEach(i=>i.addEventListener("change",applyAll));
   const ss=document.getElementById("sortSel"); if(ss) ss.addEventListener("change",applyAll);
-  priceSliderInit();
   applyAll();
   window.scrollTo(0,0);
   // empurra estado no histórico: botão voltar (mouse 4/5) funciona
@@ -623,24 +621,33 @@ window.addEventListener("popstate", (e)=>{
 
 function applyAll(){
   const rows = window.__allPageRows || [];
-  // MARCADO = restringe pra aquilo; desmarcado = sem filtro
-  const lojaSel = new Set([...document.querySelectorAll("#resultsPage .f-loja:checked")].map(i=>i.value));
-  const marcaSel = new Set([...document.querySelectorAll("#resultsPage .f-marca:checked")].map(i=>i.value));
-  const catSel = new Set([...document.querySelectorAll("#resultsPage .f-cat:checked")].map(i=>i.value));
-  const condSel = new Set([...document.querySelectorAll("#resultsPage .f-cond:checked")].map(i=>i.value));
+  // estado atual dos filtros
+  const lojaBoxes=[...document.querySelectorAll("#resultsPage .f-loja")];
+  const marcaBoxes=[...document.querySelectorAll("#resultsPage .f-marca")];
+  const catBoxes=[...document.querySelectorAll("#resultsPage .f-cat")];
+  const condBoxes=[...document.querySelectorAll("#resultsPage .f-cond")];
   const kws=[...document.querySelectorAll("#resultsPage .f-kw:checked")].map(i=>i.value);
   const pMin=+document.getElementById("priceMin").value;
   const pMax=+document.getElementById("priceMax").value;
   const sort=document.getElementById("sortSel")?.value||"best";
 
-  // 1) filtra (só restringe se houver pelo menos um marcado)
-  const passes = o=>
-    (!lojaSel.size || lojaSel.has(o.s))
-    && (!marcaSel.size || marcaSel.has(o._marca))
-    && (!catSel.size || catSel.has(o._cat))
-    && (!condSel.size || condSel.has(o._cond))
-    && (!kws.length || kws.some(k=>o.t.toLowerCase().includes(k)))
-    && o.p>=pMin && o.p<=pMax;
+  // 1) filtra
+  const passes = o=>{
+    const lojaTouched = lojaBoxes.some(i=>!i.checked);
+    const marcaTouched = marcaBoxes.some(i=>!i.checked);
+    const catTouched = catBoxes.some(i=>!i.checked);
+    const condTouched = condBoxes.some(i=>!i.checked);
+    const lojaSel = new Set(lojaBoxes.filter(i=>i.checked).map(i=>i.value));
+    const marcaSel = new Set(marcaBoxes.filter(i=>i.checked).map(i=>i.value));
+    const catSel = new Set(catBoxes.filter(i=>i.checked).map(i=>i.value));
+    const condSel = new Set(condBoxes.filter(i=>i.checked).map(i=>i.value));
+    const kwOk=!kws.length||kws.some(k=>o.t.toLowerCase().includes(k));
+    return (!lojaTouched||lojaSel.has(o.s))
+      && (!marcaTouched||marcaSel.has(o._marca))
+      && (!catTouched||catSel.has(o._cat))
+      && (!condTouched||condSel.has(o._cond))
+      && kwOk && o.p>=pMin && o.p<=pMax;
+  };
   let visiveis = rows.filter(passes);
 
   // 2) ordena os visíveis
@@ -685,7 +692,7 @@ function priceSliderInit(){
   upd();
 }
 function resetF(){
-  document.querySelectorAll("#resultsPage .side input[type=checkbox]").forEach(i=>i.checked=false);
+  document.querySelectorAll("#resultsPage .side input[type=checkbox]").forEach(i=>i.checked=true);
   const minI=document.getElementById("priceMin"),maxI=document.getElementById("priceMax");
   minI.value=minI.min; maxI.value=minI.max;
   priceSliderInit();
