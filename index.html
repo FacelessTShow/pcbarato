@@ -96,7 +96,7 @@
   </header>
 
   <div class="search">
-    <input id="q" placeholder='Busque: "rtx 5060", "ryzen 7 7800x3d"…' autocomplete="off">
+    <input id="q" placeholder='Ex.: rtx 5060, ryzen 5 5600, ssd 1tb…' autocomplete="off">
     <button onclick="doSearch()">Buscar</button>
   </div>
   <div class="meta" id="meta"></div>
@@ -143,8 +143,9 @@ const LOJAS = [...new Set(ALL.map(o=>o.s))];
 let selLojas = new Set(LOJAS);
 
 const params = new URLSearchParams(location.search);
-const q0 = (params.get("q")||"rtx 5060").toLowerCase();
+const q0 = (params.get("q")||"").toLowerCase();
 document.getElementById("q").value = q0;
+document.getElementById("q").placeholder = 'Ex.: rtx 5060, ryzen 5 5600, ssd 1tb…';
 
 function renderFilters(){
   const f = document.getElementById("filters");
@@ -176,20 +177,21 @@ function card(o, badge){
   return d;
 }
 
-// CATEGORIAS: top 1 mais barato de cada
+// CATEGORIAS: top 1 mais barato de cada (com exclusões pra não pegar PC montado / item errado)
+const NOT_PC = /pc gamer|pc montado|computador|desktop|kit upgrade|notebook|monitor|celular|smartphone/i;
 const CATS = [
-  ["🎮 GPU", /rtx|gtx|arc|radeon|placa de v(í|i)deo/i],
-  ["🧠 CPU", /ryzen|core i[3579]|processador/i],
-  ["🔧 Placa-mãe", /placa m(ã|a)e|b\d{3}|a\d{3}m|z\d{3}|b\d{3}m/i],
-  ["💾 RAM", /mem(ó|o)ria|ddr[45]|dimm|so-dimm/i],
-  ["🗄️ SSD/HDD", /\bssd\b|\bhdd\b|nvme|sata|m\.2|hd interno/i],
-  ["⚡ Fonte", /fonte|psu|wats?\b|80 plus/i],
+  ["🎮 GPU", /(\brtx\b|\bgtx\b|\barc\b a?[\d]{3,}|radeon rx|placa de v(í|i)deo)/i, /pc gamer|placa m(ã|a)e/i],
+  ["🧠 CPU", /(ryzen|core i[3579]|processador)/i, /pc gamer|placa|refriger|cooler/i],
+  ["🔧 Placa-mãe", /(placa m(ã|a)e\b)/i, /pc gamer/i],
+  ["💾 RAM", /(mem(ó|o)ria (ram|para)|\bddr[45]\b)/i, /pc gamer|placa m(ã|a)e|ssd|notebook/i],
+  ["🗄️ SSD/HDD", /(ssd|nvme|\bm\.2\b|hd interno|disco (sólido|duplo))/i, /pc gamer|gabinete/i],
+  ["⚡ Fonte", /(fonte\b|psu\b)/i, /pc gamer|cabo/i],
 ];
 function renderTop(){
   const g = document.getElementById("topGrid");
   g.innerHTML = "";
-  CATS.forEach(([label, rx])=>{
-    const cands = ALL.filter(o=> rx.test(o.t));
+  CATS.forEach(([label, rx, notrx])=>{
+    let cands = ALL.filter(o=> rx.test(o.t) && !NOT_PC.test(o.t) && !(notrx && notrx.test(o.t)));
     if(!cands.length) return;
     const best = cands.sort((a,b)=>a.p-b.p)[0];
     const c = card(best, label + " — mais barata");
