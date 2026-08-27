@@ -483,6 +483,7 @@ function openAll(){
       ${keywords.length?`<h3>Palavras-chave</h3><div id="fKw">${keywords.map(k=>`<label><input type="checkbox" class="f-kw" value="${k}"> ${k}</label>`).join("")}</div>`:""}
       <h3>Ordenar por</h3>
       <select id="sortSel" class="sortsel">
+        <option value="best">🔥 Mais vendidos (recomendado)</option>
         <option value="price_asc">Menor preço</option>
         <option value="price_desc">Maior preço</option>
         <option value="az">Nome (A–Z)</option>
@@ -493,11 +494,15 @@ function openAll(){
       <button class="clear" onclick="closeAll()">← Voltar à busca</button>
     </div>
     <div class="mainall">
-      <h1>🔍 Todos os resultados</h1>
-      <p class="sub">${rows.length} ofertas${q?" para &quot;"+q+"&quot;":""} · ordenadas por menor preço à vista · <span id="visCount"></span> visíveis</p>
-      <div class="grid" id="allGrid"></div>
-      <p class="nores" id="nores">Nenhuma oferta com esses filtros.</p>
-    </div>
+        <h1>🔍 Todos os resultados</h1>
+        <div id="top3Wrap" style="margin-bottom:20px">
+          <h3 style="font-size:15px;color:var(--gold);margin:0 0 10px">🏆 Top 3 menores preços — ${q?"&quot;"+q+"&quot;":""}</h3>
+          <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px" id="top3Grid"></div>
+        </div>
+        <p class="sub">${rows.length} ofertas · <span id="visCount"></span> visíveis</p>
+        <div class="grid" id="allGrid"></div>
+        <p class="nores" id="nores">Nenhuma oferta com esses filtros.</p>
+      </div>
   </div>`;
   document.getElementById("homePage").style.display = "none";
   document.getElementById("resultsPage").style.display = "block";
@@ -510,6 +515,14 @@ function openAll(){
     + '<div class="s">'+o.s+'</div>'
     + '<div class="price">R$ '+o.p.toFixed(2).replace(".",",")+'</div>'
     + '<a class="go" href="'+o.u+'" target="_blank" rel="nofollow noopener sponsored">Ver oferta</a></div>').join("");
+  // Top 3 menores preços fixo no topo (independente da ordenação/filtros)
+  const t3 = document.getElementById("top3Grid");
+  t3.innerHTML = "";
+  rows.slice(0,3).forEach((o,i)=>{
+    const c = card(o, "🥇🥈🥉"[i] + " menor preço");
+    c.style.cursor = "default";
+    t3.appendChild(c);
+  });
   window.__allPageRows = rows;
   document.querySelectorAll("#resultsPage .side input").forEach(i=>i.addEventListener("change",applyAll));
   const ss=document.getElementById("sortSel"); if(ss) ss.addEventListener("change",applyAll);
@@ -563,11 +576,12 @@ function applyAll(){
   const kws=[...document.querySelectorAll("#resultsPage .f-kw:checked")].map(i=>i.value);
   let vis=0;
   const sorted=[...rows];
-  const sort=document.getElementById("sortSel")?.value||"price_asc";
+  const sort=document.getElementById("sortSel")?.value||"best";
   if(sort==="price_desc") sorted.sort((a,b)=>b.p-a.p);
   else if(sort==="az") sorted.sort((a,b)=>a.t.localeCompare(b.t,"pt-BR"));
   else if(sort==="za") sorted.sort((a,b)=>b.t.localeCompare(a.t,"pt-BR"));
   else if(sort==="loja") sorted.sort((a,b)=>a.s.localeCompare(b.s,"pt-BR")||a.p-b.p);
+  else if(sort==="best") sorted.sort((a,b)=> (b.s==="Kabum")-(a.s==="Kabum") || a.p-b.p); // "mais vendidos": heurística loja popular + preço
   else sorted.sort((a,b)=>a.p-b.p);
   // reordena os cards no grid
   const grid=document.getElementById("allGrid");
