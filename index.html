@@ -157,14 +157,49 @@ render();
 
 // PcB IA widget
 const fab = document.getElementById("pcbFab"), panel = document.getElementById("pcbPanel");
-fab.addEventListener("click", ()=> panel.classList.toggle("open"));
-function pcbAsk(q){ pcbOpen(q); }
-function pcbSend(){
-  const t = document.getElementById("pcbText").value.trim();
-  if(t) pcbOpen(t);
+const chat = document.getElementById("pcbChat");
+const API = "/api/chat";
+fab.addEventListener("click", ()=>{ panel.classList.toggle("open"); if(!chat.dataset.hi){ pcbMsg("bot","E aí! 👋 Sou a PcB IA. Me diz teu setup, orçamento ou o que procuras que eu recomendo o upgrade com melhor custo-benefício — usando as ofertas reais do site."); chat.dataset.hi=1; } });
+
+function pcbMsg(who, text){
+  const d = document.createElement("div");
+  d.className = "pcb-msg " + who;
+  if(who==="bot"){ d.innerHTML = text; } else { d.textContent = text; }
+  chat.appendChild(d);
+  chat.scrollTop = chat.scrollHeight;
 }
-function pcbOpen(q){
-  window.open("https://t.me/AgentPcBbot?start=" + encodeURIComponent(q), "_blank");
+
+function pcbSend(){
+  const inp = document.getElementById("pcbText");
+  const t = inp.value.trim();
+  if(!t) return;
+  inp.value = "";
+  pcbMsg("user", t);
+  pcbReply(t);
+}
+
+async function pcbReply(q){
+  pcbMsg("bot", "Pensando… 🤔");
+  try{
+    const r = await fetch(API, {method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({message:q})});
+    const j = await r.json();
+    chat.lastChild.remove();
+    if(j.reply){
+      let html = j.reply.replace(/&/g,"&amp;").replace(/</g,"&lt;");
+      html = html.replace(/\*\*(.+?)\*\*/g,"<b>$1</b>");
+      pcbMsg("bot", html);
+    } else {
+      pcbMsg("bot","Eita, dei ruim aqui 😅 Tenta de novo em segundos.");
+    }
+  }catch(e){
+    chat.lastChild.remove();
+    pcbMsg("bot","Sem conexão com minha cabecinha agora 😅 Tenta de novo.");
+  }
+}
+
+function pcbTelegram(){
+  const t = document.getElementById("pcbText").value.trim() || "Oi! Quero uma recomendação de upgrade";
+  window.open("https://t.me/AgentPcBbot?start=" + encodeURIComponent(t), "_blank");
 }
 </script>
 </body>
