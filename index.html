@@ -160,19 +160,19 @@
 <div class="wrap">
   <header>
     <img src="logo.png" alt="PCBarato">
-    <h1>PCBarato ⚡</h1>
-    <div class="tag">Todas as lojas. Um só preço certo.</div>
+    <h1 style="letter-spacing:.5px">PcBarato ⚡</h1>
+    <div class="tag" style="margin-top:4px">Todas as lojas. Um só preço certo.</div>
     <div class="stores">
       <span class="store on">Kabum</span><span class="store on">Terabyte</span><span class="store on">Pichau</span>
       <span class="store on">Amazon</span><span class="store">Mercado Livre — breve</span><span class="store">Shopee — breve</span>
     </div>
+    <div class="meta" id="meta" style="margin-top:10px"></div>
   </header>
 
-  <div class="search">
+  <div class="search" id="mainSearch" style="display:none">
     <input id="q" placeholder='Ex.: rtx 5060, ryzen 5 5600, ssd 1tb…' autocomplete="off">
     <button onclick="doSearch()">Buscar</button>
   </div>
-  <div class="meta" id="meta"></div>
   <div class="filters" id="filters"></div>
 
   <div id="topSection">
@@ -441,6 +441,7 @@ function render(){
   document.getElementById("topSection").style.display = hasQuery ? "none" : "";
   document.getElementById("searchSection").style.display = hasQuery ? "" : "none";
   document.getElementById("filters").style.display = hasQuery ? "" : "none";
+  document.getElementById("mainSearch").style.display = hasQuery ? "" : "none";
   if(!hasQuery) return;
   const rows = searchRows(term);
   // relevantes = score >= 0; o resto vem depois
