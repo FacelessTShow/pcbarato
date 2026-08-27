@@ -75,6 +75,14 @@
   .allpage .clear:hover{color:var(--accent);border-color:var(--accent)}
   .allpage .sortsel{width:100%;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:7px 8px;color:var(--text);font-size:13px;outline:none;margin-top:2px}
   .allpage .sortsel:focus{border-color:var(--accent)}
+  /* slider de preço duplo */
+  .range-wrap{position:relative;height:36px;margin:4px 0 2px}
+  .range-bar{position:absolute;top:16px;left:0;right:0;height:4px;background:var(--border);border-radius:2px}
+  .range-fill{position:absolute;height:100%;background:var(--accent);border-radius:2px}
+  .prange{position:absolute;top:10px;left:0;width:100%;appearance:none;background:none;pointer-events:none;height:16px;margin:0}
+  .prange::-webkit-slider-thumb{appearance:none;pointer-events:auto;width:16px;height:16px;border-radius:50%;background:var(--accent);border:2px solid #04121a;cursor:pointer}
+  .prange::-moz-range-thumb{pointer-events:auto;width:14px;height:14px;border-radius:50%;background:var(--accent);border:2px solid #04121a;cursor:pointer}
+  .range-vals{display:flex;justify-content:space-between;font-size:12px;color:var(--text)}
   @media(max-width:760px){.allpage{flex-direction:column}.allpage .side{position:static;width:auto;height:auto;max-height:none;border-right:none;border-bottom:1px solid var(--border)}}
   .nores{color:var(--dim);margin-top:30px;display:none}
   .item{display:flex;align-items:center;gap:14px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 16px;transition:border-color .15s}
@@ -489,11 +497,17 @@ function openAll(){
   document.getElementById("resultsPage").innerHTML = `
   <div class="allpage">
     <div class="side">
-      <h3>Loja</h3><div id="fLoja">${lojas.map(l=>`<label><input type="checkbox" class="f-loja" value="${l}" checked> ${l}</label>`).join("")}</div>
-      <h3>Preço</h3><div id="fPreco">${faixas.map(f=>`<label><input type="checkbox" class="f-preco" data-min="${f[2]}" data-max="${f[3]}" checked> ${f[1]}</label>`).join("")}</div>
-      <h3>Marca</h3><div id="fMarca">${marcas.map(m=>`<label><input type="checkbox" class="f-marca" value="${m}" checked> ${m.charAt(0).toUpperCase()+m.slice(1)}</label>`).join("")}</div>
-      <h3>Categoria</h3><div id="fCat">${cats.map(c=>`<label><input type="checkbox" class="f-cat" value="${c}" checked> ${c.charAt(0).toUpperCase()+c.slice(1)}</label>`).join("")}</div>
-      <h3>Condição</h3><div id="fCond">${conds.map(c=>`<label><input type="checkbox" class="f-cond" value="${c}" checked> ${c==="novo"?"Novo":c==="usado"?"Usado":"Seminovo/Open-box"}</label>`).join("")}</div>
+      <h3>Preço</h3>
+      <div class="range-wrap">
+        <div class="range-bar"><div class="range-fill" id="rangeFill"></div></div>
+        <input type="range" id="priceMin" class="prange" min="${Math.floor(min)}" max="${Math.ceil(max)}" value="${Math.floor(min)}" step="1">
+        <input type="range" id="priceMax" class="prange" min="${Math.floor(min)}" max="${Math.ceil(max)}" value="${Math.ceil(max)}" step="1">
+      </div>
+      <div class="range-vals"><span id="pMinLbl"></span><span id="pMaxLbl"></span></div>
+      <h3>Loja</h3><div id="fLoja">${lojas.map(l=>`<label><input type="checkbox" class="f-loja" value="${l}"> ${l}</label>`).join("")}</div>
+      <h3>Marca</h3><div id="fMarca">${marcas.map(m=>`<label><input type="checkbox" class="f-marca" value="${m}"> ${m.charAt(0).toUpperCase()+m.slice(1)}</label>`).join("")}</div>
+      <h3>Categoria</h3><div id="fCat">${cats.map(c=>`<label><input type="checkbox" class="f-cat" value="${c}"> ${c.charAt(0).toUpperCase()+c.slice(1)}</label>`).join("")}</div>
+      <h3>Condição</h3><div id="fCond">${conds.map(c=>`<label><input type="checkbox" class="f-cond" value="${c}"> ${c==="novo"?"Novo":c==="usado"?"Usado":"Seminovo/Open-box"}</label>`).join("")}</div>
       ${keywords.length?`<h3>Palavras-chave</h3><div id="fKw">${keywords.map(k=>`<label><input type="checkbox" class="f-kw" value="${k}"> ${k}</label>`).join("")}</div>`:""}
       <button class="clear" onclick="resetF()">Limpar filtros</button>
       <button class="clear" onclick="closeAll()">← Voltar à busca</button>
@@ -587,12 +601,19 @@ window.addEventListener("popstate", (e)=>{
 
 function applyAll(){
   const rows = window.__allPageRows || [];
-  const lojas=new Set([...document.querySelectorAll("#resultsPage .f-loja:checked")].map(i=>i.value));
-  const marcas=new Set([...document.querySelectorAll("#resultsPage .f-marca:checked")].map(i=>i.value));
-  const faixas=[...document.querySelectorAll("#resultsPage .f-preco:checked")].map(i=>[+i.dataset.min,+i.dataset.max]);
-  const cats=document.querySelectorAll("#resultsPage .f-cat");
-  const conds=document.querySelectorAll("#resultsPage .f-cond");
+  // checkbox DESMARCADO = filtra; todos marcados (ou nenhum tocado) = mostra tudo
+  const lojaBoxes=[...document.querySelectorAll("#resultsPage .f-loja")];
+  const marcaBoxes=[...document.querySelectorAll("#resultsPage .f-marca")];
+  const catBoxes=[...document.querySelectorAll("#resultsPage .f-cat")];
+  const condBoxes=[...document.querySelectorAll("#resultsPage .f-cond")];
+  const touched = b => b.some(i=>!i.checked); // usuário mexeu?
+  const lojaSel = new Set(lojaBoxes.filter(i=>i.checked).map(i=>i.value));
+  const marcaSel = new Set(marcaBoxes.filter(i=>i.checked).map(i=>i.value));
+  const catSel = new Set(catBoxes.filter(i=>i.checked).map(i=>i.value));
+  const condSel = new Set(condBoxes.filter(i=>i.checked).map(i=>i.value));
   const kws=[...document.querySelectorAll("#resultsPage .f-kw:checked")].map(i=>i.value);
+  const pMin=+document.getElementById("priceMin").value;
+  const pMax=+document.getElementById("priceMax").value;
   let vis=0;
   const sorted=[...rows];
   const sort=document.getElementById("sortSel")?.value||"best";
@@ -600,27 +621,49 @@ function applyAll(){
   else if(sort==="az") sorted.sort((a,b)=>a.t.localeCompare(b.t,"pt-BR"));
   else if(sort==="za") sorted.sort((a,b)=>b.t.localeCompare(a.t,"pt-BR"));
   else if(sort==="loja") sorted.sort((a,b)=>a.s.localeCompare(b.s,"pt-BR")||a.p-b.p);
-  else if(sort==="best") sorted.sort((a,b)=> (b.s==="Kabum")-(a.s==="Kabum") || a.p-b.p); // "mais vendidos": heurística loja popular + preço
+  else if(sort==="best") sorted.sort((a,b)=> (b.s==="Kabum")-(a.s==="Kabum") || a.p-b.p);
   else sorted.sort((a,b)=>a.p-b.p);
-  // reordena os cards no grid
   const grid=document.getElementById("allGrid");
-  const byIdx = sorted.map(o=> rows.indexOf(o));
-  byIdx.forEach(i=> grid.appendChild(grid.children[i]));
+  sorted.map(o=> rows.indexOf(o)).forEach(i=> grid.appendChild(grid.children[i]));
   document.querySelectorAll("#allGrid .card").forEach((c,idx)=>{
     const o=rows[idx];
-    const marcaOk=[...marcas].some(m=> m==="outra" ? o._marca==="outra" : o._marca===m);
-    const precoOk=faixas.some(([a,b])=>o.p>=a&&o.p<=b);
-    const catOk=!cats.length||[...cats].some(i=>i.checked&&i.value===o._cat);
-    const condOk=!conds.length||[...conds].some(i=>i.checked&&i.value===o._cond);
+    const lojaOk=!touched(lojaBoxes)||lojaSel.has(o.s);
+    const marcaOk=!touched(marcaBoxes)||marcaSel.has(o._marca);
+    const catOk=!touched(catBoxes)||catSel.has(o._cat);
+    const condOk=!touched(condBoxes)||condSel.has(o._cond);
     const kwOk=!kws.length||kws.some(k=>o.t.toLowerCase().includes(k));
-    const ok=lojas.has(o.s)&&marcaOk&&precoOk&&catOk&&condOk&&kwOk;
+    const precoOk=o.p>=pMin&&o.p<=pMax;
+    const ok=lojaOk&&marcaOk&&catOk&&condOk&&kwOk&&precoOk;
     c.style.display=ok?"":"none"; if(ok)vis++;
   });
   document.getElementById("visCount").textContent=vis;
   document.getElementById("nores").style.display=vis?"none":"block";
 }
 
-function resetF(){document.querySelectorAll("#resultsPage .side input").forEach(i=>i.checked=true);applyAll();}
+// slider duplo de preço
+function priceSliderInit(){
+  const minI=document.getElementById("priceMin"), maxI=document.getElementById("priceMax");
+  const fill=document.getElementById("rangeFill"), lmin=document.getElementById("pMinLbl"), lmax=document.getElementById("pMaxLbl");
+  const brl=v=>"R$ "+Math.round(v).toLocaleString("pt-BR");
+  function upd(){
+    let a=+minI.value,b=+maxI.value;
+    if(a>b){[a,b]=[b,a];}
+    const min=+minI.min,max=+minI.max;
+    fill.style.left=((a-min)/(max-min)*100)+"%";
+    fill.style.right=(100-((b-min)/(max-min)*100))+"%";
+    lmin.textContent=brl(a); lmax.textContent=brl(b);
+    applyAll();
+  }
+  minI.addEventListener("input",()=>{ if(+minI.value>+maxI.value) minI.value=maxI.value; upd(); });
+  maxI.addEventListener("input",()=>{ if(+maxI.value<+minI.value) maxI.value=minI.value; upd(); });
+  upd();
+}
+function resetF(){
+  document.querySelectorAll("#resultsPage .side input[type=checkbox]").forEach(i=>i.checked=true);
+  const minI=document.getElementById("priceMin"),maxI=document.getElementById("priceMax");
+  minI.value=minI.min; maxI.value=minI.max;
+  priceSliderInit();
+}
 
 // sincroniza o campo do topbar quando digita no principal
 document.getElementById("q").addEventListener("input", ()=>{ document.getElementById("qTop").value = document.getElementById("q").value; });
