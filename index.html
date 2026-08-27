@@ -30,16 +30,26 @@
   .sec-title{font-size:19px;margin:26px 0 12px}
   .sec-sub{color:var(--dim);font-size:13px;margin:-6px 0 12px}
   .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}
-  .card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:8px;transition:border-color .15s}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:8px;transition:border-color .15s;text-align:center;align-items:center}
   .card:hover{border-color:#3a5a8a}
   .card .badge{font-size:11px;color:var(--gold);font-weight:700}
-  .card .t{font-size:13px;color:var(--text);line-height:1.45;flex:1;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+  .card .t{font-size:13px;color:var(--text);line-height:1.45;flex:1;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;width:100%}
   .card .s{font-size:12px;color:var(--dim)}
-  .card .price{font-size:20px;font-weight:700;color:var(--green)}
-  .card .go{background:#1a2636;border:1px solid var(--border);border-radius:10px;padding:9px 0;text-align:center;color:var(--accent);text-decoration:none;font-size:14px}
+  .card .price{font-size:20px;font-weight:700;color:var(--green);width:100%}
+  .card .go{background:#1a2636;border:1px solid var(--border);border-radius:10px;padding:9px 0;text-align:center;color:var(--accent);text-decoration:none;font-size:14px;width:100%}
   .card .go:hover{border-color:var(--accent)}
-  .pimg{width:100%;height:150px;object-fit:contain;background:#fff;border-radius:10px;padding:6px;box-sizing:border-box}
+  .pimg{width:135px;height:135px;object-fit:contain;background:#fff;border-radius:10px;padding:6px;box-sizing:border-box;margin:0 auto}
   .pimg.ph{display:flex;align-items:center;justify-content:center;font-size:40px;background:#0e1420}
+
+  /* carrossel top ofertas */
+  .carousel{position:relative}
+  .car-track{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+  .car-page{display:contents}
+  .car-btn{position:absolute;top:50%;transform:translateY(-50%);width:42px;height:42px;border-radius:50%;background:var(--card);border:1px solid var(--border);color:var(--accent);font-size:20px;cursor:pointer;z-index:5;box-shadow:0 2px 10px rgba(0,0,0,.4)}
+  .car-btn:hover{border-color:var(--accent)}
+  .car-btn.prev{left:-14px}
+  .car-btn.next{right:-14px}
+  .car-dots{text-align:center;margin-top:14px;font-size:12px;color:var(--dim)}
   .aff{align-items:center;text-align:center}
   .aff .logo{font-size:34px}
   .aff .name{font-size:15px;font-weight:700;color:var(--text)}
@@ -123,7 +133,12 @@
 
   <div id="topSection">
     <h2 class="sec-title">🔥 Top ofertas por categoria</h2>
-    <div class="grid" id="topGrid"></div>
+    <div class="carousel">
+      <button class="car-btn prev" onclick="carMove(-1)">‹</button>
+      <div class="car-track" id="topGrid"></div>
+      <button class="car-btn next" onclick="carMove(1)">›</button>
+    </div>
+    <div class="car-dots" id="carDots"></div>
   </div>
 
   <div id="searchSection" style="display:none">
@@ -241,14 +256,46 @@ const CATS = [
 function renderTop(){
   const g = document.getElementById("topGrid");
   g.innerHTML = "";
+  const cards = [];
   CATS.forEach(([label, rx, notrx])=>{
     let cands = ALL.filter(o=> rx.test(o.t) && !NOT_PC.test(o.t) && !(notrx && notrx.test(o.t)));
     if(!cands.length) return;
     const best = cands.sort((a,b)=>a.p-b.p)[0];
-    const c = card(best, label);
-    g.appendChild(c);
+    cards.push(card(best, label));
   });
+  // embaralha pra cada visita mostrar ordem diferente
+  cards.sort(()=>Math.random()-0.5);
+  cards.forEach(c=>g.appendChild(c));
+  carPage = 0;
+  carUpdate();
+  carStartTimer();
 }
+
+// carrossel: 4 por página
+let carPage = 0, carTimer = null;
+function carUpdate(){
+  const g = document.getElementById("topGrid");
+  const total = g.children.length;
+  const perPage = 4;
+  const pages = Math.ceil(total/perPage);
+  if(carPage >= pages) carPage = pages-1;
+  [...g.children].forEach((c,i)=>{
+    c.style.display = (i >= carPage*perPage && i < (carPage+1)*perPage) ? "" : "none";
+  });
+  document.getElementById("carDots").textContent = Array.from({length:pages},(_,i)=> i===carPage ? "●" : "○").join("  ");
+}
+function carMove(dir){
+  const total = document.getElementById("topGrid").children.length;
+  const pages = Math.ceil(total/4);
+  carPage = (carPage + dir + pages) % pages;
+  carUpdate();
+  carRestartTimer();
+}
+function carStartTimer(){
+  if(carTimer) clearInterval(carTimer);
+  carTimer = setInterval(()=>{ if(document.getElementById("topSection").style.display !== "none") carMove(1); }, 7000);
+}
+function carRestartTimer(){ carStartTimer(); }
 
 function renderAffiliates(){
   const g = document.getElementById("affGrid");
