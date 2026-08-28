@@ -28,6 +28,10 @@
   .search input:focus{border-color:var(--accent)}
   .search button{background:var(--accent);border:none;border-radius:12px;padding:0 22px;color:#fff;font-size:16px;cursor:pointer}
   .meta{text-align:center;color:var(--dim);font-size:13px;margin-bottom:20px}
+  
+  .catbtn{background:var(--accent);color:#04121a !important;border:none;border-radius:10px;padding:8px 14px;font-size:13px;font-weight:700;text-decoration:none;display:inline-block;transition:filter .15s}
+  .catbtn:hover{filter:brightness(1.08)}
+
   .filters{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:18px}
   .chip{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:5px 14px;font-size:13px;color:var(--dim);cursor:pointer}
   .chip.sel{border-color:var(--accent);color:var(--accent)}
@@ -179,6 +183,24 @@
   </header>
 
   <div class="filters" id="filters"></div>
+  <div id="catBar" style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:16px 0 22px">
+    <a class="catbtn" href="/?cat=gpu" onclick="return openCat(event,'gpu')">GPU</a>
+    <a class="catbtn" href="/?cat=cpu" onclick="return openCat(event,'cpu')">CPU</a>
+    <a class="catbtn" href="/?cat=placa-mae" onclick="return openCat(event,'placa-mae')">Placa-mãe</a>
+    <a class="catbtn" href="/?cat=ram" onclick="return openCat(event,'ram')">RAM</a>
+    <a class="catbtn" href="/?cat=ssd" onclick="return openCat(event,'ssd')">SSD</a>
+    <a class="catbtn" href="/?cat=hdd" onclick="return openCat(event,'hdd')">HDD</a>
+    <a class="catbtn" href="/?cat=fonte" onclick="return openCat(event,'fonte')">Fonte</a>
+    <a class="catbtn" href="/?cat=gabinete" onclick="return openCat(event,'gabinete')">Gabinete</a>
+    <a class="catbtn" href="/?cat=monitor" onclick="return openCat(event,'monitor')">Monitor</a>
+    <a class="catbtn" href="/?cat=teclado" onclick="return openCat(event,'teclado')">Teclado</a>
+    <a class="catbtn" href="/?cat=mouse" onclick="return openCat(event,'mouse')">Mouse</a>
+    <a class="catbtn" href="/?cat=headset" onclick="return openCat(event,'headset')">Headset</a>
+    <a class="catbtn" href="/?cat=cadeira" onclick="return openCat(event,'cadeira')">Cadeira</a>
+    <a class="catbtn" href="/?cat=notebook" onclick="return openCat(event,'notebook')">Notebook</a>
+    <a class="catbtn" href="/?cat=outros" onclick="return openCat(event,'outros')">Outros</a>
+  </div>
+
 
   <div id="topSection">
     <h2 class="sec-title">🔥 Top ofertas por categoria</h2>
@@ -207,8 +229,22 @@
   <footer>
     PCBarato © 2026 · Preços atualizados automaticamente · Alguns links são de afiliados — não custa nada a mais para você e mantém o projeto vivo 💙<br><br>
     <span style="font-size:12px;opacity:.85">As ofertas estão sujeitas a variações de estoque promocional, disponibilidade e preços. Cupons sujeitos à disponibilidade, conforme o limite de usos por cupom ou lote.</span><br><br>
-    <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:12px 0">
-      <a href="/c/gpu.html">GPU</a> · <a href="/c/cpu.html">CPU</a> · <a href="/c/placa-mae.html">Placa-mãe</a> · <a href="/c/ram.html">RAM</a> · <a href="/c/ssd.html">SSD</a> · <a href="/c/hdd.html">HDD</a> · <a href="/c/fonte.html">Fonte</a> · <a href="/c/gabinete.html">Gabinete</a> · <a href="/c/monitor.html">Monitor</a> · <a href="/c/teclado.html">Teclado</a> · <a href="/c/mouse.html">Mouse</a> · <a href="/c/headset.html">Headset</a> · <a href="/c/cadeira.html">Cadeira</a> · <a href="/c/notebook.html">Notebook</a> · <a href="/c/outros.html">Outros</a>
+    <div style="margin:12px 0 10px;display:flex;flex-wrap:wrap;gap:8px;justify-content:center">
+      <a href="/?cat=gpu" onclick="return openCat(event,'gpu')">GPU</a> ·
+      <a href="/?cat=cpu" onclick="return openCat(event,'cpu')">CPU</a> ·
+      <a href="/?cat=placa-mae" onclick="return openCat(event,'placa-mae')">Placa-mãe</a> ·
+      <a href="/?cat=ram" onclick="return openCat(event,'ram')">RAM</a> ·
+      <a href="/?cat=ssd" onclick="return openCat(event,'ssd')">SSD</a> ·
+      <a href="/?cat=hdd" onclick="return openCat(event,'hdd')">HDD</a> ·
+      <a href="/?cat=fonte" onclick="return openCat(event,'fonte')">Fonte</a> ·
+      <a href="/?cat=gabinete" onclick="return openCat(event,'gabinete')">Gabinete</a> ·
+      <a href="/?cat=monitor" onclick="return openCat(event,'monitor')">Monitor</a> ·
+      <a href="/?cat=teclado" onclick="return openCat(event,'teclado')">Teclado</a> ·
+      <a href="/?cat=mouse" onclick="return openCat(event,'mouse')">Mouse</a> ·
+      <a href="/?cat=headset" onclick="return openCat(event,'headset')">Headset</a> ·
+      <a href="/?cat=cadeira" onclick="return openCat(event,'cadeira')">Cadeira</a> ·
+      <a href="/?cat=notebook" onclick="return openCat(event,'notebook')">Notebook</a> ·
+      <a href="/?cat=outros" onclick="return openCat(event,'outros')">Outros</a>
     </div>
     <a href="https://t.me/AgentPcBbot">💬 Fale com a PcB IA no Telegram</a> · <a href="https://t.me/pcbaratoo">📢 Canal de ofertas</a> · <a href="/privacidade.html">Privacidade</a> · <a href="/termos.html">Termos</a>
   </footer>
@@ -304,7 +340,7 @@ function card(o, badge){
 // CATEGORIAS: top 1 mais barato de cada (com exclusões pra não pegar PC montado / item errado)
 const NOT_PC = /pc gamer|pc montado|computador|desktop|kit upgrade|notebook|celular|smartphone/i;
 const CATS = [
-  ["🎮 GPU — mais barata", /(\brtx\b|\bgtx\b|\barc\b a?[\d]{3,}|radeon rx|placa de v(í|i)deo)/i, /pc gamer|placa m(ã|a)e|notebook/i],
+  ["🎮 GPU — mais barata", /(\brtx\s*\d{3,}|\bgtx\s*\d{3,}|radeon\s*rx\s*\d{3,}|\brx\s*\d{3,}\b|geforce|intel\s+arc\s*a\d{3}|placa de v(í|i)deo\s*(geforce|rtx|gtx|radeon|rx))/i, /pc gamer|placa m(ã|a)e|notebook|arcade|sopro|suporte|cabo|placa usb|joystick|pcb|ar comprimido/i],
   ["🧠 CPU — mais barato", /(ryzen|core i[3579]|processador)/i, /pc gamer|placa|refriger|cooler|notebook|kit/i],
   ["🔧 Placa-mãe — mais barata", /(placa[- ]?m(ã|a)e\b)/i, /pc gamer|gabinete|notebook|kit/i],
   ["🛠️ Kit Upgrade — mais barato", /(kit upgrade|pichau kit|kit[^a-z]*\b(ryzen|core i\d|intel|amd)\b)/i, /pc gamer|notebook|lâmpada|ferramentas/i],
@@ -619,7 +655,7 @@ function closeAll(){
   document.getElementById("resultsPage").style.display = "none";
   document.getElementById("homePage").style.display = "";
   // volta limpo, como recém-aberto
-  const url = new URL(location); url.searchParams.delete("q");
+  const url = new URL(location); url.searchParams.delete("q"); url.searchParams.delete("cat");
   history.replaceState(null,"",url.pathname + url.search);
   render();
   const s = document.getElementById("pcbSug"); if(s) s.style.display = "";
@@ -716,11 +752,75 @@ function resetF(){
 }
 
 
+// --- categorias: filtra TODOS os itens da categoria com imagem + filtros verticais iguais ao Ver todas ---
+const CAT_TITLES={gpu:"GPU",cpu:"CPU","placa-mae":"Placa-mãe",ram:"RAM",ssd:"SSD",hdd:"HDD",fonte:"Fonte",gabinete:"Gabinete",monitor:"Monitor",teclado:"Teclado",mouse:"Mouse",headset:"Headset",cadeira:"Cadeira",notebook:"Notebook",outros:"Outros"};
+const CAT_RX={
+  gpu: /(rtx\s*\d{3,}|gtx\s*\d{3,}|radeon\s*rx\s*\d{3,}|geforce|intel\s+arc\s*a\d{3}|placa de v(\u00ed|i)deo\s*(geforce|rtx|gtx|radeon|rx))/i,
+  cpu: /(ryzen|core i[3579]|processador)/i,
+  "placa-mae": /placa[- ]?m(\u00e3|a)e\b/i,
+  ram: /(mem(\u00f3|o)ria (ram|para)|\bddr[45]\b)/i,
+  ssd: /(ssd|nvme|\bm\.2\b)/i,
+  hdd: /(hd interno|\bhdd\b|disco (mec(\u00e2|a)nico|r\u00edgido))/i,
+  fonte: /(fonte[^a-z]*\d+\s*w|fonte atx|fonte.*80 ?plus|psu\b)/i,
+  gabinete: /(\bgabinete\b|mid tower|full tower)/i,
+  monitor: /monitor/i,
+  teclado: /teclado/i,
+  mouse: /mouse(?!pad)/i,
+  headset: /(headset|fone de ouvido|earphone|fone gamer|headphone)/i,
+  cadeira: /cadeira/i,
+  notebook: /notebook/i,
+};
+function rowsForCat(cat){
+  if(cat==="outros") return ALL.filter(o=> !Object.keys(CAT_RX).some(k=> CAT_RX[k].test(o.t)));
+  const rx=CAT_RX[cat]; if(!rx) return ALL.slice();
+  return ALL.filter(o=> rx.test(o.t));
+}
+function openCat(e,cat){
+  if(e) e.preventDefault();
+  const url=new URL(location); url.searchParams.set("cat",cat); url.hash="todas";
+  history.pushState({view:"todas",cat}, "", url.pathname+url.search+url.hash);
+  openCatPage(cat);
+  return false;
+}
+function openCatPage(cat){
+  let rows=rowsForCat(cat).filter(o=> selLojas.has(o.s));
+  rows.sort((a,b)=> a.p-b.p);
+  // reutiliza a mesma UI do Ver todas mas com as rows da categoria e titulo da categoria
+  const q=""; // sem termo de busca
+  const lojas=[...new Set(rows.map(o=>o.s))];
+  const prices=rows.map(o=>o.p); const min=prices.length?Math.min(...prices):0, max=prices.length?Math.max(...prices):0;
+  const faixas=[];
+  const BRAND_RX=/(msi|gigabyte|asus|asrock|zotac|inno3d|galax|gainward|pny|colorful|powercolor|sapphire|corsair|kingston|xpg|adata|crucial|sandisk|wd\b|seagate|evga|logitech|redragon|hyperx|razer|multilaser|rise mode|noctua|deepcool|thermalright|mancer|hiksemi|cooler master|montech|ocypus|amd|intel|azza|aigo|picsil)/i;
+  const marcas=[...new Set(rows.map(o=>(o.t.match(BRAND_RX)||[null,"outra"])[1].toLowerCase()))];
+  rows.forEach(o=>{ o._marca=(o.t.match(BRAND_RX)||[null,"outra"])[1].toLowerCase(); });
+  rows.forEach(o=>{ o._cond=/seminovo|semi-novo|open ?box/i.test(o.t)?"seminovo":/usado/i.test(o.t)?"usado":"novo"; });
+  const conds=[...new Set(rows.map(o=>o._cond))];
+  const CAT_RX2=[["gpu",/(rtx\b|gtx\b|arc\b|radeon rx|placa de v(\u00ed|i)deo)/i],["cpu",/(ryzen|core i[3579]|processador)/i],["placa-m\u00e3e",/placa m(\u00e3|a)e/i],["ram",/(mem(\u00f3|o)ria|\bddr[45]\b)/i],["armazenamento",/(ssd|nvme|\bm\.2\b|\bhd\b|hdd)/i],["fonte",/(fonte\b|psu\b)/i],["cooler\/fan",/(cooler|ventoinha|water ?cooler|\bfan\b)/i],["gabinete",/(gabinete|case\b)/i],["monitor",/monitor/i],["perif\u00e9ricos",/(teclado|mouse|headset|fone|controle|mousepad|webcam|microfone)/i],["redes",/(roteador|wi-?fi|wireless)/i],["ilumina\u00e7\u00e3o",/(fita led|l(\u00e2|a)mpada|rgb)/i],["\u00e1udio",/(caixa de som|soundbar|speaker)/i],["computadores",/(pc gamer|pc montado|computador|desktop|notebook)/i],["energia",/(nobreak|\bups\b|estabilizador)/i],["outros",/./]];
+  rows.forEach(o=>{ o._cat=(CAT_RX2.find(([,rx])=>rx.test(o.t))||["outros"])[0]; });
+  const cats=[...new Set(rows.map(o=>o._cat))];
+  const STOP=new Set(["de","para","com","e","a","o","em","pc","gamer","kit","novo","deo","vdeo"]);
+  const kwCount={}; rows.forEach(o=> (o.t.toLowerCase().match(/\b[\w.-]{3,}\b/g)||[]).forEach(w=>{ if(!STOP.has(w)&&!/^\d+$/.test(w)) kwCount[w]=(kwCount[w]||0)+1; }));
+  const keywords=Object.entries(kwCount).filter(([w,c])=>c>=3&&!/[ÃÂ]/.test(w)).sort((a,b)=>b[1]-a[1]).slice(0,10).map(e=>e[0]);
+  const title=CAT_TITLES[cat]||cat;
+  document.getElementById("resultsPage").innerHTML=`<div class="allpage"><div class="side"><h3>Preço</h3><div class="range-wrap"><div class="range-bar"><div class="range-fill" id="rangeFill"></div></div><input type="range" id="priceMin" class="prange" min="${Math.floor(min)}" max="${Math.ceil(max)}" value="${Math.floor(min)}" step="1"><input type="range" id="priceMax" class="prange" min="${Math.floor(min)}" max="${Math.ceil(max)}" value="${Math.ceil(max)}" step="1"></div><div class="range-vals"><span id="pMinLbl"></span><span id="pMaxLbl"></span></div><h3>Loja</h3><div id="fLoja">${lojas.map(l=>`<label><input type="checkbox" class="f-loja" value="${l}"> ${l}</label>`).join("")}</div><h3>Marca</h3><div id="fMarca">${marcas.map(m=>`<label><input type="checkbox" class="f-marca" value="${m}"> ${m.charAt(0).toUpperCase()+m.slice(1)}</label>`).join("")}</div><h3>Categoria</h3><div id="fCat">${cats.map(c=>`<label><input type="checkbox" class="f-cat" value="${c}"> ${c.charAt(0).toUpperCase()+c.slice(1)}</label>`).join("")}</div><h3>Condição</h3><div id="fCond">${conds.map(c=>`<label><input type="checkbox" class="f-cond" value="${c}"> ${c==="novo"?"Novo":c==="usado"?"Usado":"Seminovo/Open-box"}</label>`).join("")}</div>${keywords.length?`<h3>Palavras-chave</h3><div id="fKw">${keywords.map(k=>`<label><input type="checkbox" class="f-kw" value="${k}"> ${k.charAt(0).toUpperCase()+k.slice(1)}</label>`).join("")}</div>`:""}<button class="clear" onclick="resetF()">Limpar filtros</button><button class="clear" onclick="closeAll()">← Voltar</button></div><div class="mainall"><h1 style="margin:0 0 4px">${title}</h1><p class="sub" style="margin:0 0 10px">${rows.length} ofertas em ${title}</p><div style="display:flex;justify-content:flex-end;margin:-8px 0 10px"><div style="display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:6px 10px"><span style="font-size:12px;color:var(--dim)">Ordenar por</span><select id="sortSel" style="width:auto;padding:4px 8px;background:transparent;border:none;color:var(--text);font-size:13px;font-weight:600;outline:none"><option value="price_asc">Menor preço</option><option value="price_desc">Maior preço</option><option value="best">🔥 Mais vendidos</option><option value="az">Nome (A–Z)</option><option value="za">Nome (Z–A)</option><option value="loja">Loja (A–Z)</option></select></div></div><div id="top3Wrap" style="margin:0 0 20px"><h3 style="font-size:15px;color:var(--gold);margin:0 0 10px;text-align:center">🏆 Top 3 Menores Preços — ${title}</h3><div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px" id="top3Grid"></div></div><p class="sub"><span id="visCount"></span> visíveis</p><div class="grid" id="allGrid"></div><p class="nores" id="nores">Nenhuma oferta com esses filtros.</p></div></div>`;
+  document.getElementById("homePage").style.display="none"; document.getElementById("resultsPage").style.display="block";
+  const allGrid=document.getElementById("allGrid");
+  allGrid.innerHTML=rows.map(o=> '<div class="card">'+(o.i?'<img class="pimg" src="'+o.i+'" alt="" loading="lazy" onerror="this.style.display=\'none\'">':'<div class="pimg ph">🖥️</div>')+'<div class="t" title="'+o.t.replace(/"/g,"&quot;")+'">'+o.t+'</div><div class="s">'+o.s+'</div><div class="price">R$ '+o.p.toFixed(2).replace(".",",")+'</div><a class="go" href="'+o.u+'" target="_blank" rel="nofollow noopener sponsored">Ver oferta</a></div>').join("");
+  const t3=document.getElementById("top3Grid"); t3.innerHTML=""; rows.slice(0,3).forEach((o,i)=>{ const medals=["TOP 1","TOP 2","TOP 3"]; const c=card(o,medals[i]); t3.appendChild(c); });
+  window.__allPageRows=rows;
+  document.querySelectorAll("#resultsPage .side input").forEach(i=>i.addEventListener("change",applyAll));
+  const ss=document.getElementById("sortSel"); if(ss) ss.addEventListener("change",applyAll);
+  priceSliderInit(); applyAll(); window.scrollTo(0,0);
+}
+
 document.getElementById("meta").textContent = "Ofertas atualizadas em " + (window.OFERTAS.updated||"").slice(0,10).split("-").reverse().join("/");
 renderFilters();
 renderTop();
 renderAffiliates();
 render();
+// se veio com ?cat=gpu (do rodapé/categoria ou link direto), abre já como Ver todas com filtros verticais
+const __catParam=new URLSearchParams(location.search).get("cat");
+if(__catParam && CAT_TITLES[__catParam]) setTimeout(()=>openCatPage(__catParam),80);
 
 // PcB IA widget
 const fab = document.getElementById("pcbFab"), panel = document.getElementById("pcbPanel");
