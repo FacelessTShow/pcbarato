@@ -3,4 +3,19 @@
   <url><loc>https://pcbarato.vercel.app/</loc><changefreq>hourly</changefreq><priority>1.0</priority></url>
   <url><loc>https://pcbarato.vercel.app/privacidade.html</loc><changefreq>monthly</changefreq><priority>0.3</priority></url>
   <url><loc>https://pcbarato.vercel.app/auth/ml/callback.html</loc><changefreq>never</changefreq><priority>0.1</priority></url>
+  <url><loc>https://pcbarato.vercel.app/c/gpu.html</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>https://pcbarato.vercel.app/c/cpu.html</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>https://pcbarato.vercel.app/c/placa-mae.html</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>https://pcbarato.vercel.app/c/ram.html</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>https://pcbarato.vercel.app/c/ssd.html</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>https://pcbarato.vercel.app/c/hdd.html</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>https://pcbarato.vercel.app/c/fonte.html</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>https://pcbarato.vercel.app/c/gabinete.html</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>https://pcbarato.vercel.app/c/monitor.html</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>https://pcbarato.vercel.app/c/teclado.html</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>https://pcbarato.vercel.app/c/mouse.html</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>https://pcbarato.vercel.app/c/headset.html</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>https://pcbarato.vercel.app/c/cadeira.html</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>https://pcbarato.vercel.app/c/notebook.html</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>https://pcbarato.vercel.app/c/outros.html</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
 </urlset>
