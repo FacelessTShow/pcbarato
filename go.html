@@ -1,0 +1,9 @@
+<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><meta http-equiv="refresh" content="0; url="><title>Redirecionando...</title>
+<script>
+const p=new URLSearchParams(location.search);
+const to=p.get('to');
+if(to) location.href=decodeURIComponent(to);
+</script>
+</head><body>Redirecionando para oferta... <a id="a" href="#">clique aqui</a>
+<script>document.getElementById('a').href=decodeURIComponent(new URLSearchParams(location.search).get('to')||'https://pcbarato.vercel.app')</script>
+</body></html>
