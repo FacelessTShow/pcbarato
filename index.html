@@ -296,8 +296,9 @@ function card(o, badge){
 const NOT_PC = /pc gamer|pc montado|computador|desktop|kit upgrade|notebook|celular|smartphone/i;
 const CATS = [
   ["🎮 GPU — mais barata", /(\brtx\b|\bgtx\b|\barc\b a?[\d]{3,}|radeon rx|placa de v(í|i)deo)/i, /pc gamer|placa m(ã|a)e|notebook/i],
-  ["🧠 CPU — mais barato", /(ryzen|core i[3579]|processador)/i, /pc gamer|placa|refriger|cooler|notebook/i],
-  ["🔧 Placa-mãe — mais barata", /(placa[- ]?m(ã|a)e\b)/i, /pc gamer|gabinete|notebook/i],
+  ["🧠 CPU — mais barato", /(ryzen|core i[3579]|processador)/i, /pc gamer|placa|refriger|cooler|notebook|kit/i],
+  ["🔧 Placa-mãe — mais barata", /(placa[- ]?m(ã|a)e\b)/i, /pc gamer|gabinete|notebook|kit/i],
+  ["🛠️ Kit Upgrade — mais barato", /(kit upgrade|pichau kit|kit[^a-z]*\b(ryzen|core i\d|intel|amd)\b)/i, /pc gamer|notebook|lâmpada|ferramentas/i],
   ["💾 RAM — mais barata", /(mem(ó|o)ria (ram|para)|\bddr[45]\b)/i, /pc gamer|placa[- ]?m(ã|a)e|ssd|notebook|chipset/i],
   ["🗄️ SSD — mais barato", /(ssd|nvme|\bm\.2\b|disco s(ó|o)lido)/i, /pc gamer|placa[- ]?m(ã|a)e|gabinete|notebook/i],
   ["💽 HDD — mais barato", /(hd interno|\bhdd\b|disco (mec(â|a)nico|rígido))/i, /pc gamer|gabinete|cabo hdmi|notebook/i],
@@ -327,7 +328,8 @@ function renderTop(){
   g.innerHTML = "";
   const cards = [];
   CATS.forEach(([label, rx, notrx])=>{
-    let cands = ALL.filter(o=> rx.test(o.t) && !NOT_PC.test(o.t) && !(notrx && notrx.test(o.t)));
+    const isKit = /kit upgrade/i.test(label);
+    let cands = ALL.filter(o=> rx.test(o.t) && (isKit || !NOT_PC.test(o.t)) && !(notrx && notrx.test(o.t)));
     if(!cands.length) return;
     const best = cands.sort((a,b)=>a.p-b.p)[0];
     cards.push(card(best, label));
