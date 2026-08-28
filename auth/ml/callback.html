@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Autorização Mercado Livre — PcBarato</title>
+<style>
+  body{font-family:system-ui,Arial,sans-serif;max-width:700px;margin:0 auto;padding:32px;line-height:1.6}
+  .ok{background:#dcfce7;border:1px solid #86efac;padding:16px;border-radius:12px}
+  .err{background:#fee2e2;border:1px solid #fca5a5;padding:16px;border-radius:12px}
+  code{word-break:break-all;background:#f1f5f9;padding:2px 6px;border-radius:6px}
+</style>
+</head>
+<body>
+<h1>PcBarato — Callback Mercado Livre</h1>
+<div id="box">Processando...</div>
+<script>
+const p = new URLSearchParams(location.search);
+const code = p.get('code');
+const err = p.get('error');
+const box = document.getElementById('box');
+if(code){
+  box.className='ok';
+  box.innerHTML = '<b>✅ Autorizado!</b><br> Copia este <code>code</code> e me envia no chat:<br><br><code>'+code+'</code><br><br>URL completa:<br><code>'+location.href+'</code>';
+} else if(err){
+  box.className='err';
+  box.innerHTML = '<b>❌ Erro:</b> '+err+'<br>'+location.search;
+} else {
+  box.innerHTML = 'Aguardando code... Se você autorizou, a URL deve conter ?code=...';
+}
+</script>
+</body>
+</html>
