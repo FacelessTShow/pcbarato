@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://pcbarato.vercel.app/sitemap.xml
