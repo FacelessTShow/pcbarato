@@ -784,7 +784,7 @@ function openCat(e,cat){
 }
 function openCatPage(cat){
   let rows=rowsForCat(cat).filter(o=> selLojas.has(o.s));
-  // relevância por categoria: GPU placa de vídeo real primeiro, acessório depois
+  // relevância por categoria: produto real primeiro, acessório/peça avulsa depois
   rows.forEach(o=>{
     const t=o.t.toLowerCase();
     let s=0;
@@ -794,7 +794,20 @@ function openCatPage(cat){
       if(/backplate|blende|i\/o shield|defletor|moldura|escudo|back plate|back-plate/.test(t)) s-=80;
       if(/ventoinha|ventilador|cooler|fan\b|suporte\b.*gpu/.test(t)) s-=70;
       if(/suporte.*placa|bracket/.test(t)) s-=60;
-    } else if(cat==="cpu"){ if(/processador/.test(t)) s+=30; if(/cooler|ventoinha/.test(t)) s-=40; }
+    } else if(cat==="cpu"){ if(/processador/.test(t)) s+=40; if(/cooler|ventoinha|water cooler|dissipador/.test(t)) s-=60; }
+    else if(cat==="placa-mae"){ if(/placa[- ]?m(\u00e3|a)e\b/.test(t)) s+=40; if(/suporte|parafuso|cabo/.test(t)) s-=30; }
+    else if(cat==="ram"){ if(/mem(\u00f3|o)ria ram/.test(t)) s+=40; if(/\bddr[45]\b/.test(t)) s+=20; }
+    else if(cat==="ssd"){ if(/\bssd\b|nvme|\bm\.2\b/.test(t)) s+=40; if(/case|adaptador|gaveta|enclosure/.test(t)) s-=50; }
+    else if(cat==="hdd"){ if(/\bhdd\b|hd interno/.test(t)) s+=40; if(/case|adaptador/.test(t)) s-=40; }
+    else if(cat==="fonte"){ if(/fonte.*\d+\s*w|80 ?plus/.test(t)) s+=40; if(/cabo|extensor/.test(t)) s-=40; }
+    else if(cat==="gabinete"){ if(/\bgabinete\b/.test(t)) s+=40; if(/fita|fan\b|cooler/.test(t) && !/gabinete/.test(t)) s-=30; }
+    else if(cat==="monitor"){ if(/monitor/.test(t)) s+=40; if(/suporte.*monitor|bra\u00e7o|cabo hdmi|pel(\u00ed|i)cula/.test(t)) s-=50; }
+    else if(cat==="teclado"){ if(/teclado/.test(t)) s+=40; if(/keycap|pel(\u00ed|i)cula|capa/.test(t)) s-=30; }
+    else if(cat==="mouse"){ if(/\bmouse\b/.test(t)) s+=40; if(/mousepad|mouse pad/.test(t)) s-=80; }
+    else if(cat==="headset"){ if(/headset|fone de ouvido|headphone/.test(t)) s+=40; if(/almofada|earpad|suporte/.test(t)) s-=30; }
+    else if(cat==="cadeira"){ if(/cadeira/.test(t)) s+=40; }
+    else if(cat==="notebook"){ if(/notebook/.test(t)) s+=40; if(/suporte|mochila|capa|pel(\u00ed|i)cula/.test(t)) s-=40; }
+    else if(cat==="outros"){ s=0; }
     o._rel=s;
   });
   rows.sort((a,b)=> (b._rel-a._rel) || (a.p-b.p));
