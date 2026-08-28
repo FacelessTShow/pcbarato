@@ -167,7 +167,7 @@
     <div class="tag" style="margin-top:6px;font-size:16px">Todas as lojas. Um só preço certo.</div>
     <div class="stores">
       <span class="store on">Kabum</span><span class="store on">Terabyte</span><span class="store on">Pichau</span>
-      <span class="store on">Amazon</span><span class="store on">Gigantec</span><span class="store">Mercado Livre — breve</span><span class="store">Shopee — breve</span>
+      <span class="store on">Amazon</span><span class="store on">Gigantec</span><span class="store on">AliExpress</span><span class="store">Mercado Livre — breve</span><span class="store">Shopee — breve</span>
     </div>
     <div class="meta" id="meta" style="margin-top:10px"></div>
   </header>
@@ -381,7 +381,7 @@ function renderAffiliates(){
   const AFF = [
     ["amazon","🛒","Amazon","Milhões de produtos, entrega rápida — links monetizados ✅", null],
     ["kabum","🎮","KaBuM!","A loja gamer brasileira — aguardando aprovação Awin", "breve"],
-    ["aliexpress","📦","AliExpress","Ofertas da China com cupom — aprovação em andamento", "breve"],
+    ["aliexpress","📦","AliExpress","Ofertas da China com cupom — links monetizados ✅", null],
     ["shopee","🛍️","Shopee","Tudo e barato — API em liberação", "breve"],
     ["mercadolivre","🟡","Mercado Livre","O marketplace líder — app em certificação", "breve"],
     ["pichau","🖥️","Pichau","Hardware gamer direto da fábrica", null],
@@ -400,6 +400,7 @@ function renderAffiliates(){
 const AFF_LINKS = {
   amazon: "https://www.amazon.com.br/?tag=pcbarato05-20",
   pichau: "https://www.pichau.com.br",
+  aliexpress: "https://www.aliexpress.com",
 };
 
 // relevância: pontua cada oferta contra o termo buscado
