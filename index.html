@@ -158,6 +158,27 @@
   .pcb-sug button{background:#0f1626;border:1px solid var(--border);border-radius:10px;padding:8px 12px;color:var(--text);font-size:12.5px;cursor:pointer;text-align:left}
   .pcb-sug button:hover{border-color:var(--accent);color:var(--accent)}
 
+  /* comparar lado a lado */
+  .cmp-btn{margin-top:6px;background:transparent;border:1px solid var(--border);color:var(--dim);border-radius:8px;padding:5px 10px;font-size:11px;cursor:pointer;width:100%}
+  .cmp-btn.on{border-color:var(--accent);color:var(--accent);background:rgba(34,211,238,.08)}
+  .cmp-bar{position:fixed;bottom:0;left:0;right:0;background:#101828;border-top:1px solid var(--border);padding:10px 16px;display:flex;align-items:center;gap:12px;z-index:60;transform:translateY(110%);transition:transform .22s;box-shadow:0 -4px 20px rgba(0,0,0,.4)}
+  .cmp-bar.on{transform:translateY(0)}
+  .cmp-bar .thumbs{display:flex;gap:8px;flex:1}
+  .cmp-bar .thumb{width:56px;height:56px;background:#0f1626;border:1px solid var(--border);border-radius:8px;overflow:hidden;display:flex;align-items:center;justify-content:center;position:relative}
+  .cmp-bar .thumb img{width:100%;height:100%;object-fit:contain;background:#fff}
+  .cmp-bar .thumb .x{position:absolute;top:2px;right:2px;background:#1a2338;border:1px solid var(--border);border-radius:50%;width:16px;height:16px;font-size:10px;line-height:14px;text-align:center;cursor:pointer;color:var(--dim)}
+  .cmp-bar .act{display:flex;gap:8px;align-items:center}
+  .cmp-bar .act button{border:none;border-radius:10px;padding:9px 16px;font-weight:700;cursor:pointer;font-size:13px}
+  .cmp-bar .act .go-cmp{background:var(--accent);color:#04121a}
+  .cmp-bar .act .clear-cmp{background:transparent;border:1px solid var(--border);color:var(--dim)}
+  .cmp-modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:70;padding:16px}
+  .cmp-modal.on{display:flex}
+  .cmp-modal .box{background:var(--card);border:1px solid var(--border);border-radius:16px;max-width:900px;width:100%;max-height:90vh;overflow:auto;padding:18px}
+  .cmp-modal table{width:100%;border-collapse:collapse;font-size:13px}
+  .cmp-modal th,.cmp-modal td{border:1px solid var(--border);padding:10px;text-align:left;vertical-align:top}
+  .cmp-modal th{background:#0f1626;color:var(--dim);font-weight:600}
+  .cmp-modal .price{color:var(--green);font-weight:700;font-size:15px}
+  .cmp-modal .close{float:right;background:transparent;border:1px solid var(--border);color:var(--dim);border-radius:8px;padding:6px 10px;cursor:pointer}
 
 </style>
 </head>
@@ -248,6 +269,10 @@
   <a class="pcb-tg" onclick="pcbTelegram()">Prefere continuar no Telegram? Abre aqui 💬</a>
 </div>
 
+<!-- comparar barra + modal -->
+<div class="cmp-bar" id="cmpBar"><div class="thumbs" id="cmpThumbs"></div><div class="act"><button class="clear-cmp" onclick="clearCmp()">Limpar</button><button class="go-cmp" id="cmpGo" onclick="openCmp()">Comparar</button></div></div>
+<div class="cmp-modal" id="cmpModal" onclick="if(event.target===this)closeCmp()"><div class="box" id="cmpBox"></div></div>
+
 <script src="ofertas.js"></script>
 <script>
 const ALL = window.OFERTAS.offers || [];
@@ -310,12 +335,14 @@ function card(o, badge){
     ? '<img class="pimg" src="'+o.i+'" alt="" loading="lazy" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">'
       + '<div class="pimg ph" style="display:none">🖥️</div>'
     : '<div class="pimg ph">🖥️</div>';
+  const isCmp = (window._cmp||[]).some(x=>x.u===o.u);
   d.innerHTML = (badge?'<div class="badge">'+badge+'</div>':'')
     + '<div class="t" title="'+o.t.replace(/"/g,"&quot;")+'">'+o.t+'</div>'
     + imgHtml
     + '<div class="s">'+o.s+'</div>'
     + '<div class="price">R$ '+o.p.toFixed(2).replace(".",",")+'</div>'
-    + '<a class="go" href="'+o.u+'" target="_blank" rel="nofollow noopener sponsored">Ver oferta</a>';
+    + '<a class="go" href="'+o.u+'" target="_blank" rel="nofollow noopener sponsored">Ver oferta</a>'
+    + '<button class="cmp-btn'+(isCmp?' on':'')+'" onclick="toggleCmp(\''+o.u.replace(/'/g,"\\'")+'\')">'+(isCmp?'✓ Comparando':'⇄ Comparar')+'</button>';
   return d;
 }
 
@@ -812,7 +839,10 @@ function openCatPage(cat){
   document.getElementById("resultsPage").innerHTML=`<div class="allpage"><div class="side"><h3>Preço</h3><div class="range-wrap"><div class="range-bar"><div class="range-fill" id="rangeFill"></div></div><input type="range" id="priceMin" class="prange" min="${Math.floor(min)}" max="${Math.ceil(max)}" value="${Math.floor(min)}" step="1"><input type="range" id="priceMax" class="prange" min="${Math.floor(min)}" max="${Math.ceil(max)}" value="${Math.ceil(max)}" step="1"></div><div class="range-vals"><span id="pMinLbl"></span><span id="pMaxLbl"></span></div><h3>Loja</h3><div id="fLoja">${lojas.map(l=>`<label><input type="checkbox" class="f-loja" value="${l}"> ${l}</label>`).join("")}</div><h3>Marca</h3><div id="fMarca">${marcas.map(m=>`<label><input type="checkbox" class="f-marca" value="${m}"> ${m.charAt(0).toUpperCase()+m.slice(1)}</label>`).join("")}</div><h3>Categoria</h3><div id="fCat">${cats.map(c=>`<label><input type="checkbox" class="f-cat" value="${c}"> ${c.charAt(0).toUpperCase()+c.slice(1)}</label>`).join("")}</div><h3>Condição</h3><div id="fCond">${conds.map(c=>`<label><input type="checkbox" class="f-cond" value="${c}"> ${c==="novo"?"Novo":c==="usado"?"Usado":"Seminovo/Open-box"}</label>`).join("")}</div>${keywords.length?`<h3>Palavras-chave</h3><div id="fKw">${keywords.map(k=>`<label><input type="checkbox" class="f-kw" value="${k}"> ${k.charAt(0).toUpperCase()+k.slice(1)}</label>`).join("")}</div>`:""}<button class="clear" onclick="resetF()">Limpar filtros</button><button class="clear" onclick="closeAll()">← Voltar</button></div><div class="mainall"><h1 style="margin:0 0 4px">${title}</h1><p class="sub" style="margin:0 0 10px">${rows.length} ofertas em ${title}</p><div style="display:flex;justify-content:flex-end;margin:-8px 0 10px"><div style="display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:6px 10px"><span style="font-size:12px;color:var(--dim)">Ordenar por</span><select id="sortSel" style="width:auto;padding:4px 8px;background:transparent;border:none;color:var(--text);font-size:13px;font-weight:600;outline:none"><option value="relevancia">⭐ Mais relevantes</option><option value="price_asc">Menor preço</option><option value="price_desc">Maior preço</option><option value="best">🔥 Mais vendidos</option><option value="az">Nome (A–Z)</option><option value="za">Nome (Z–A)</option><option value="loja">Loja (A–Z)</option></select></div></div><div id="top3Wrap" style="margin:0 0 20px"><h3 style="font-size:15px;color:var(--gold);margin:0 0 10px;text-align:center">🏆 Top 3 Menores Preços — ${title}</h3><div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px" id="top3Grid"></div></div><p class="sub"><span id="visCount"></span> visíveis</p><div class="grid" id="allGrid"></div><p class="nores" id="nores">Nenhuma oferta com esses filtros.</p></div></div>`;
   document.getElementById("homePage").style.display="none"; document.getElementById("resultsPage").style.display="block";
   const allGrid=document.getElementById("allGrid");
-  allGrid.innerHTML=rows.map(o=> '<div class="card">'+(o.i?'<img class="pimg" src="'+o.i+'" alt="" loading="lazy" onerror="this.style.display=\'none\'">':'<div class="pimg ph">🖥️</div>')+'<div class="t" title="'+o.t.replace(/"/g,"&quot;")+'">'+o.t+'</div><div class="s">'+o.s+'</div><div class="price">R$ '+o.p.toFixed(2).replace(".",",")+'</div><a class="go" href="'+o.u+'" target="_blank" rel="nofollow noopener sponsored">Ver oferta</a></div>').join("");
+  allGrid.innerHTML=rows.map(o=> {
+    const isCmp=(window._cmp||[]).some(x=>x.u===o.u);
+    return '<div class="card">'+(o.i?'<img class="pimg" src="'+o.i+'" alt="" loading="lazy" onerror="this.style.display=\'none\'">':'<div class="pimg ph">🖥️</div>')+'<div class="t" title="'+o.t.replace(/"/g,"&quot;")+'">'+o.t+'</div><div class="s">'+o.s+'</div><div class="price">R$ '+o.p.toFixed(2).replace(".",",")+'</div><a class="go" href="'+o.u+'" target="_blank" rel="nofollow noopener sponsored">Ver oferta</a><button class="cmp-btn'+(isCmp?' on':'')+'" onclick="toggleCmp(\''+o.u.replace(/'/g,"\\'")+'\')">'+(isCmp?'✓ Comparando':'⇄ Comparar')+'</button></div>';
+  }).join("");
   const t3=document.getElementById("top3Grid"); t3.innerHTML=""; rows.slice(0,3).forEach((o,i)=>{ const medals=["TOP 1","TOP 2","TOP 3"]; const c=card(o,medals[i]); t3.appendChild(c); });
   window.__allPageRows=rows;
   document.querySelectorAll("#resultsPage .side input").forEach(i=>i.addEventListener("change",applyAll));
@@ -915,6 +945,50 @@ function pcbTelegram(){
   const t = document.getElementById("pcbText").value.trim() || "Oi! Quero uma recomendação de upgrade";
   window.open("https://t.me/AgentPcBbot?start=" + encodeURIComponent(t), "_blank");
 }
+
+// comparar lado a lado
+window._cmp = JSON.parse(localStorage.getItem("_cmp")||"[]");
+function toggleCmp(u){
+  const offer = (window.__allPageRows||ALL).find(x=>x.u===u) || ALL.find(x=>x.u===u);
+  if(!offer) return;
+  let idx = window._cmp.findIndex(x=>x.u===u);
+  if(idx>=0) window._cmp.splice(idx,1);
+  else {
+    if(window._cmp.length>=3){ alert("Máximo 3 produtos para comparar"); return; }
+    window._cmp.push(offer);
+  }
+  localStorage.setItem("_cmp", JSON.stringify(window._cmp.map(o=>o.u)));
+  renderCmpBar();
+  // re-render botões
+  document.querySelectorAll(".cmp-btn").forEach(b=>{
+    const url = b.getAttribute("onclick")?.match(/toggleCmp\('(.*)'\)/)?.[1];
+    if(!url) return;
+    const on = window._cmp.some(x=>x.u===url.replace(/\\'/g,"'"));
+    b.classList.toggle("on", on);
+    b.textContent = on ? "✓ Comparando" : "⇄ Comparar";
+  });
+}
+function renderCmpBar(){
+  const bar=document.getElementById("cmpBar");
+  const thumbs=document.getElementById("cmpThumbs");
+  if(!bar||!thumbs) return;
+  thumbs.innerHTML = window._cmp.map(o=> `<div class="thumb"><img src="${o.i||''}" onerror="this.style.display='none'"><span class="x" onclick="toggleCmp('${o.u.replace(/'/g,"\\'")}')">×</span></div>`).join("") + (window._cmp.length===0?'<span style="color:var(--dim);font-size:12px;align-self:center">Selecione até 3 produtos com “Comparar”</span>':"");
+  bar.classList.toggle("on", window._cmp.length>0);
+  const btn=document.getElementById("cmpGo"); if(btn) btn.disabled=window._cmp.length<2;
+}
+function clearCmp(){ window._cmp=[]; localStorage.setItem("_cmp","[]"); renderCmpBar(); document.querySelectorAll(".cmp-btn").forEach(b=>{b.classList.remove("on"); b.textContent="⇄ Comparar"}); }
+function openCmp(){
+  if(window._cmp.length<2){ alert("Selecione pelo menos 2 produtos"); return; }
+  const m=document.getElementById("cmpModal");
+  const box=document.getElementById("cmpBox");
+  const rows=window._cmp;
+  const cheapest=Math.min(...rows.map(r=>r.p));
+  box.innerHTML=`<button class="close" onclick="closeCmp()">✕ Fechar</button><h3 style="margin:0 0 12px">⇄ Comparando ${rows.length} produtos</h3><table><tr><th></th>${rows.map(o=>`<th><img src="${o.i||''}" style="width:80px;height:80px;object-fit:contain;background:#fff;border-radius:8px;display:block;margin-bottom:6px" onerror="this.style.display='none'"><div style="font-size:12px;line-height:1.3">${o.t.slice(0,60)}</div></th>`).join("")}</tr><tr><th>Preço</th>${rows.map(o=>`<td class="price">${o.p===cheapest?'🏆 ':''}R$ ${o.p.toFixed(2).replace(".",",")}${o.p===cheapest?' <span style="color:var(--gold);font-size:11px">MENOR</span>':''}</td>`).join("")}</tr><tr><th>Loja</th>${rows.map(o=>`<td>${o.s}</td>`).join("")}</tr><tr><th></th>${rows.map(o=>`<td><a href="${o.u}" target="_blank" style="background:var(--accent);color:#04121a;padding:7px 12px;border-radius:8px;text-decoration:none;font-weight:700;font-size:12px;display:inline-block">Ver oferta</a></td>`).join("")}</tr></table><p style="margin-top:10px;color:var(--dim);font-size:11px">Dica: clique em ✕ nos thumbnails da barra pra remover.</p>`;
+  m.classList.add("on");
+}
+function closeCmp(){ document.getElementById("cmpModal").classList.remove("on"); }
+// restaura _cmp de URLs salvas
+(function(){ const saved=JSON.parse(localStorage.getItem("_cmp")||"[]"); if(saved.length){ window._cmp = saved.map(u=>ALL.find(x=>x.u===u)).filter(Boolean); } renderCmpBar(); })();
 </script>
 </body>
 </html>
