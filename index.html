@@ -314,7 +314,7 @@ function goHome(){
   document.getElementById("resultsPage").style.display = "none";
   document.getElementById("homePage").style.display = "";
   document.getElementById("qTop").value = "";
-  const url = new URL(location); url.searchParams.delete("q");
+  const url = new URL(location); url.searchParams.delete("q"); url.searchParams.delete("cat");
   history.replaceState(null,"",url.pathname + url.search);
   render();
   window.scrollTo(0,0);
@@ -672,7 +672,7 @@ window.addEventListener("popstate", (e)=>{
     // voltou: fecha a página de resultados e volta pra home
     document.getElementById("resultsPage").style.display = "none";
     document.getElementById("homePage").style.display = "";
-      const url = new URL(location); url.searchParams.delete("q");
+      const url = new URL(location); url.searchParams.delete("q"); url.searchParams.delete("cat");
     history.replaceState(null,"",url.pathname + url.search);
     render();
     const s = document.getElementById("pcbSug"); if(s) s.style.display = "";
