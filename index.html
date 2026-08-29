@@ -792,23 +792,23 @@ function openCatPage(cat){
       const real=/placa de v[íi]deo/i.test(o.t);
       const acc=/backplate|blende|i\/o shield|defletor|moldura|escudo|ventoinha|ventilador|fan|suporte|bracket/i.test(tl);
       s = real?100:0; if(real && /(rtx|gtx|rx\s*\d|radeon)/i.test(o.t)) s+=40; if(acc) s-=90;
-    } else if(cat==="cpu"){ const real=/processador|ryzen|core i[3579]/i.test(o.t); const acc=/cooler|ventoinha|dissipador|pasta/i.test(tl); s=real?100:0; if(acc) s-=90; }
-    else if(cat==="placa-mae"){ const real=/placa m[ãa]e/i.test(o.t); const acc=/suporte|parafuso|cabo|fan/i.test(tl); s=real?100:0; if(acc) s-=90; }
-    else if(cat==="ram"){ const real=/mem[óo]ria ram|ddr4|ddr5|kit \d mem/i.test(tl); s=real?100:0; }
-    else if(cat==="ssd"){ const real=/ssd|nvme|m\.2/i.test(o.t); const acc=/adaptador|gaveta|enclosure|case/i.test(tl); s=real?100:0; if(acc) s-=90; }
-    else if(cat==="hdd"){ const real=/hdd|disco r[íigido]|hd interno/i.test(o.t); const acc=/cabo|adaptador|case/i.test(tl); s=real?100:0; if(acc) s-=90; }
-    else if(cat==="fonte"){ const real=/fonte\s*\d+\s*w|fonte atx|80\s*plus|psu/i.test(o.t); const acc=/cabo|extensor/i.test(tl); s=real?100:0; if(acc) s-=90; }
-    else if(cat==="gabinete"){ const real=/gabinete|mid tower|full tower/i.test(o.t); const acc=/fita led|fan|cooler/i.test(tl) && !/gabinete/i.test(o.t); s=real?100:0; if(acc) s-=90; }
-    else if(cat==="monitor"){ const real=/monitor/i.test(o.t); const acc=/adaptador|conversor|cabo|extensor|suporte|bra[cç]o|pel[íi]cula|para monitor/i.test(tl); s=real?100:0; if(acc) s-=90; }
-    else if(cat==="teclado"){ const real=/teclado/i.test(o.t); const acc=/limpeza|ferramenta|soprador|bomba|keycap|capa|hub|para teclado/i.test(tl); s=real?100:0; if(acc) s-=90; }
-    else if(cat==="mouse"){ const real=/mouse(?!pad)/i.test(o.t); const acc=/mousepad|mouse pad|tapete|p[eé]s|switch|micro switch|adesivo/i.test(tl); s=real?100:0; if(acc) s-=90; }
+    } else if(cat==="cpu"){ const real=/processador|ryzen|core i[3579]/i.test(o.t); const acc=/cooler|ventoinha|dissipador|pasta t[eé]rmica|suporte|water cooler/i.test(tl); s=real?100:0; if(acc) s-=90; }
+    else if(cat==="placa-mae"){ const real=/placa m[ãa]e\b/i.test(o.t); const acc=/suporte|parafuso|cabo|fan|espelho|i\/o shield|bracket/i.test(tl); s=real?100:0; if(acc) s-=90; }
+    else if(cat==="ram"){ const real=/mem[óo]ria ram|ddr4|ddr5|kit \d mem/i.test(tl); const acc=/dissipador|cooler|adaptador|case/i.test(tl); s=real?100:0; if(acc) s-=90; }
+    else if(cat==="ssd"){ const real=/\bssd\b|nvme|m\.2/i.test(o.t); const acc=/adaptador|gaveta|enclosure|case|caddy|cabo|suporte/i.test(tl); s=real?100:0; if(acc) s-=90; }
+    else if(cat==="hdd"){ const real=/\bhdd\b|disco r[íigido]\b|hd interno/i.test(o.t); const acc=/cabo|adaptador|case|gaveta|caddy/i.test(tl); s=real?100:0; if(acc) s-=90; }
+    else if(cat==="fonte"){ const real=/fonte\s*\d+\s*w|fonte atx|80\s*plus|psu\b/i.test(o.t); const acc=/cabo|extensor|adaptador|extens/i.test(tl); s=real?100:0; if(acc) s-=90; }
+    else if(cat==="gabinete"){ const real=/\bgabinete\b/i.test(o.t); const acc=/fita led|fan\b|cooler|vidro temperado|tampa/i.test(tl) && !/\bgabinete\b/i.test(o.t); s=real?100:0; if(acc) s-=90; }
+    else if(cat==="monitor"){ const real=/\bmonitor\b/i.test(o.t); const acc=/adaptador|conversor|cabo|extensor|suporte|bra[cç]o|pel[íi]cula|para monitor/i.test(tl); s=real?100:0; if(acc) s-=90; }
+    else if(cat==="teclado"){ const real=/\bteclado\b/i.test(o.t); const acc=/limpeza|ferramenta|soprador|bomba|keycap|capa|hub|para teclado|descanso/i.test(tl); s=real?100:0; if(acc) s-=90; }
+    else if(cat==="mouse"){ const real=/\bmouse\b(?!pad)/i.test(o.t); const acc=/mousepad|mouse pad|tapete|p[eé]s|switch|micro switch|adesivo|descanso/i.test(tl); s=real?100:0; if(acc) s-=90; }
     else if(cat==="headset"){ const real=/headset|fone de ouvido|headphone/i.test(o.t); const acc=/limpeza|canet|espuma|divisor|camiseta|adaptador|almofada|earpad|suporte|extens/i.test(tl); s=real?100:0; if(acc) s-=90; }
-    else if(cat==="cadeira"){ const real=/cadeira/i.test(o.t); s=real?100:0; }
-    else if(cat==="notebook"){ const real=/notebook/i.test(o.t); const acc=/suporte|mochila|capa|pel[íi]cula|adaptador|hub|conversor/i.test(tl); s=real?100:0; if(acc) s-=90; }
+    else if(cat==="cadeira"){ const real=/\bcadeira\b/i.test(o.t); const acc=/capa|almofada|rod[ií]zio|apoio|bra[cç]o|descanso/i.test(tl); s=real?100:0; if(acc) s-=90; }
+    else if(cat==="notebook"){ const real=/\bnotebook\b/i.test(o.t); const acc=/suporte|mochila|capa|pel[íi]cula|adaptador|hub|conversor|base/i.test(tl); s=real?100:0; if(acc) s-=90; }
     else { s=0; }
     o._rel=s;
   });
-  rows.sort((a,b)=> (b._rel-a._rel) || (a.p-b.p));((a,b)=> (b._rel-a._rel) || (a.p-b.p));
+  rows.sort((a,b)=> (b._rel-a._rel) || (a.p-b.p));
   // reutiliza a mesma UI do Ver todas mas com as rows da categoria e titulo da categoria
   const q=""; // sem termo de busca
   const lojas=[...new Set(rows.map(o=>o.s))];
