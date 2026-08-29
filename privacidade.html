@@ -1,42 +1,41 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Política de Privacidade — PcBarato</title>
-<style>
-  body{font-family:system-ui,Arial,sans-serif;max-width:800px;margin:0 auto;padding:32px;line-height:1.6;color:#0d1220}
-  h1{font-size:28px;margin:0 0 8px}
-  .muted{color:#666;font-size:13px}
-  h2{font-size:18px;margin:24px 0 8px}
-  a{color:#0ea5e9}
-</style>
-</head>
-<body>
+<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Política de Privacidade — PcBarato</title><link rel="canonical" href="https://pcbarato.vercel.app/privacidade.html"><style>
+:root{--bg:#0d1220;--card:#141b2e;--border:#263450;--text:#e6ecf7;--dim:#8291ad;--accent:#22d3ee}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,Arial,sans-serif;line-height:1.7}
+.topbar{position:sticky;top:0;z-index:100;background:#101828e6;backdrop-filter:blur(8px);border-bottom:1px solid var(--border);padding:10px 24px;display:flex;align-items:center;gap:10px}
+.topbar a{display:flex;align-items:center;gap:10px;text-decoration:none}
+.topbar img{width:34px;height:34px;border-radius:8px}
+.topbar span{font-size:19px;font-weight:800;background:linear-gradient(90deg,#22d3ee,#a78bfa);-webkit-background-clip:text;background-clip:text;color:transparent}
+.wrap{max-width:800px;margin:0 auto;padding:32px 20px}
+h1{font-size:28px;margin:0 0 6px}
+.muted{color:var(--dim);font-size:13px;margin-bottom:20px}
+h2{font-size:18px;margin:28px 0 8px}
+p{margin:8px 0}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:24px}
+footer{text-align:center;color:var(--dim);font-size:12px;padding:28px 0}
+code{background:#0f1626;border:1px solid var(--border);border-radius:6px;padding:1px 6px;font-size:13px}
+</style></head><body>
+<div class="topbar"><a href="/"><img src="/logo.png" alt="PcBarato"><span>PcBarato</span></a></div>
+<div class="wrap"><div class="card">
 <h1>Política de Privacidade — PcBarato</h1>
-<p class="muted">Última atualização: 28/08/2026 — PcBarato (pcbarato.vercel.app)</p>
-
-<p>O PcBarato é um comparador de preços de hardware. Esta política explica como tratamos dados ao integrar com o Mercado Livre e outras lojas via APIs de afiliados.</p>
-
+<p class="muted">Última atualização: 28/08/2026 — pcbarato.vercel.app</p>
+<p>PcBarato é um comparador de preços de hardware. Esta política explica como tratamos dados ao integrar com Mercado Livre e outras lojas via APIs de afiliados.</p>
 <h2>1. Dados coletados</h2>
-<p>Coletamos apenas dados públicos de ofertas (título, preço, imagem, disponibilidade) via APIs oficiais. Não coletamos dados pessoais sensíveis nem armazenamos cartões. Para a integração com o Mercado Livre, armazenamos apenas <strong>access_token</strong> e <strong>refresh_token</strong> do aplicativo <code>3918756121989781</code> para chamadas autenticadas de busca.</p>
-
+<p>Coletamos apenas dados públicos de ofertas (título, preço, imagem, disponibilidade) via APIs oficiais. Não coletamos dados sensíveis nem armazenamos cartões. Para o Mercado Livre, armazenamos apenas <code>access_token</code> e <code>refresh_token</code> do app <code>3918756121989781</code> para buscas autenticadas.</p>
 <h2>2. Uso dos dados</h2>
-<p>Os dados de ofertas são usados exclusivamente para comparação de preços e geração de links de afiliado com rastreamento (ex: <code>pcbarato05-20</code> Amazon, <code>Pcbarata</code> AliExpress, <code>awc=115463</code> Awin/Gigantec). Não vendemos dados.</p>
-
+<p>Usamos ofertas exclusivamente pra comparação e geração de links afiliados (ex: <code>pcbarato05-20</code> Amazon, <code>Pcbarata</code> AliExpress, <code>awc=115463</code> Awin/Gigantec). Não vendemos dados.</p>
 <h2>3. Cookies e rastreamento</h2>
-<p>Utilizamos cookies de afiliados das lojas parceiras (30 dias Last Click em alguns programas). O usuário é informado no rodapé: "Alguns links são de afiliados — não custa nada a mais".</p>
-
+<p>Usamos cookies de afiliados das lojas parceiras (30 dias Last Click em alguns programas). Aviso no rodapé: “Alguns links são de afiliados — não custa nada a mais”.</p>
 <h2>4. Compartilhamento</h2>
-<p>Compartilhamos apenas o necessário com as APIs das lojas para obter ofertas. Não compartilhamos tokens com terceiros.</p>
-
-<h2>5. Direitos</h2>
-<p>Você pode solicitar exclusão de dados de contato via <a href="https://t.me/AgentPcBbot">Telegram @AgentPcBbot</a> ou email pedrolpes6@hotmail.com.</p>
-
+<p>Compartilhamos apenas o necessário com as APIs das lojas pra obter ofertas. Não repassamos tokens a terceiros.</p>
+<h2>5. Seus direitos (LGPD)</h2>
+<p>Você pode pedir exclusão de dados de contato via <a href="https://t.me/AgentPcBbot">Telegram @AgentPcBbot</a> ou <a href="mailto:pedrolpes6@hotmail.com">pedrolpes6@hotmail.com</a>.</p>
 <h2>6. Contato</h2>
 <p>PcBarato — pedrolpes6@hotmail.com — https://pcbarato.vercel.app</p>
-
-<hr>
+<hr style="border:none;border-top:1px solid var(--border);margin:20px 0">
 <p class="muted">Esta página atende aos requisitos do Mercado Livre para Redirect URI e certificação do app 3918756121989781.</p>
-</body>
-</html>
+</div>
+<footer>PCBarato © 2026 · <a href="/privacidade.html">Privacidade</a> · <a href="/termos.html">Termos</a> · <a href="https://t.me/pcbaratoo">Canal</a></footer>
+</div></body></html>
