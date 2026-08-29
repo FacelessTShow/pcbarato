@@ -1,9 +1,12 @@
-<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><meta http-equiv="refresh" content="0; url="><title>Redirecionando...</title>
-<script>
+<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>Redirecionando...</title><meta name="robots" content="noindex,nofollow"></head><body style="font-family:system-ui;padding:32px;text-align:center"><p>Redirecionando para a oferta...</p><p><a id="a" href="https://pcbarato.vercel.app">voltar ao PcBarato</a></p><script>
 const p=new URLSearchParams(location.search);
 const to=p.get('to');
-if(to) location.href=decodeURIComponent(to);
-</script>
-</head><body>Redirecionando para oferta... <a id="a" href="#">clique aqui</a>
-<script>document.getElementById('a').href=decodeURIComponent(new URLSearchParams(location.search).get('to')||'https://pcbarato.vercel.app')</script>
-</body></html>
+if(to){
+  try{
+    const url=decodeURIComponent(to);
+    document.getElementById('a').href=url;
+    document.getElementById('a').textContent='Continuar para a loja';
+    setTimeout(()=>location.href=url, 800);
+  }catch(e){}
+}
+</script></body></html>
