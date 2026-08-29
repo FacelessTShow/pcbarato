@@ -336,8 +336,9 @@ function card(o, badge){
       + '<div class="pimg ph" style="display:none">🖥️</div>'
     : '<div class="pimg ph">🖥️</div>';
   const isCmp = (window._cmp||[]).some(x=>x.u===o.u);
+  const pid = o.id ? '/p/'+o.id+'.html' : '#';
   d.innerHTML = (badge?'<div class="badge">'+badge+'</div>':'')
-    + '<div class="t" title="'+o.t.replace(/"/g,"&quot;")+'">'+o.t+'</div>'
+    + '<a href="'+pid+'" style="text-decoration:none;color:inherit;width:100%"><div class="t" title="'+o.t.replace(/"/g,"&quot;")+'">'+o.t+'</div></a>'
     + imgHtml
     + '<div class="s">'+o.s+'</div>'
     + '<div class="price">R$ '+o.p.toFixed(2).replace(".",",")+'</div>'
@@ -841,6 +842,7 @@ function openCatPage(cat){
   const allGrid=document.getElementById("allGrid");
   allGrid.innerHTML=rows.map(o=> {
     const isCmp=(window._cmp||[]).some(x=>x.u===o.u);
+    const pid=o.id?'/p/'+o.id+'.html':'#';
     return '<div class="card">'+(o.i?'<img class="pimg" src="'+o.i+'" alt="" loading="lazy" onerror="this.style.display=\'none\'">':'<div class="pimg ph">🖥️</div>')+'<div class="t" title="'+o.t.replace(/"/g,"&quot;")+'">'+o.t+'</div><div class="s">'+o.s+'</div><div class="price">R$ '+o.p.toFixed(2).replace(".",",")+'</div><a class="go" href="'+o.u+'" target="_blank" rel="nofollow noopener sponsored">Ver oferta</a><button class="cmp-btn'+(isCmp?' on':'')+'" onclick="toggleCmp(\''+o.u.replace(/'/g,"\\'")+'\')">'+(isCmp?'✓ Comparando':'⇄ Comparar')+'</button></div>';
   }).join("");
   const t3=document.getElementById("top3Grid"); t3.innerHTML=""; rows.slice(0,3).forEach((o,i)=>{ const medals=["TOP 1","TOP 2","TOP 3"]; const c=card(o,medals[i]); t3.appendChild(c); });
