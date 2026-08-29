@@ -799,10 +799,10 @@ function openCatPage(cat){
     else if(cat==="hdd"){ const real=/hdd|disco r[íigido]|hd interno/i.test(o.t); const acc=/cabo|adaptador|case/i.test(tl); s=real?100:0; if(acc) s-=90; }
     else if(cat==="fonte"){ const real=/fonte\s*\d+\s*w|fonte atx|80\s*plus|psu/i.test(o.t); const acc=/cabo|extensor/i.test(tl); s=real?100:0; if(acc) s-=90; }
     else if(cat==="gabinete"){ const real=/gabinete|mid tower|full tower/i.test(o.t); const acc=/fita led|fan|cooler/i.test(tl) && !/gabinete/i.test(o.t); s=real?100:0; if(acc) s-=90; }
-    else if(cat==="monitor"){ const real=/monitor/i.test(o.t); const acc=/suporte|cabo hdmi|pel[íi]cula|braço/i.test(tl); s=real?100:0; if(acc) s-=90; }
-    else if(cat==="teclado"){ const real=/teclado/i.test(o.t); const acc=/limpeza|keycap|capa/i.test(tl); s=real?100:0; if(acc) s-=90; }
-    else if(cat==="mouse"){ const real=/mouse(?!pad)/i.test(o.t); const acc=/mousepad|mouse pad/i.test(tl); s=real?100:0; if(acc) s-=90; }
-    else if(cat==="headset"){ const real=/headset|fone de ouvido|headphone/i.test(o.t); const acc=/limpeza|canet|almofada|earpad|suporte/i.test(tl); s=real?100:0; if(acc) s-=90; }
+    else if(cat==="monitor"){ const real=/monitor/i.test(o.t); const acc=/adaptador|conversor|cabo|extensor|suporte|bra[cç]o|pel[íi]cula|para monitor/i.test(tl); s=real?100:0; if(acc) s-=90; }
+    else if(cat==="teclado"){ const real=/teclado/i.test(o.t); const acc=/limpeza|ferramenta|soprador|bomba|keycap|capa|hub|para teclado/i.test(tl); s=real?100:0; if(acc) s-=90; }
+    else if(cat==="mouse"){ const real=/mouse(?!pad)/i.test(o.t); const acc=/mousepad|mouse pad|tapete|p[eé]s|switch|micro switch|adesivo/i.test(tl); s=real?100:0; if(acc) s-=90; }
+    else if(cat==="headset"){ const real=/headset|fone de ouvido|headphone/i.test(o.t); const acc=/limpeza|canet|espuma|divisor|camiseta|adaptador|almofada|earpad|suporte|extens/i.test(tl); s=real?100:0; if(acc) s-=90; }
     else if(cat==="cadeira"){ const real=/cadeira/i.test(o.t); s=real?100:0; }
     else if(cat==="notebook"){ const real=/notebook/i.test(o.t); const acc=/suporte|mochila|capa|pel[íi]cula|adaptador|hub|conversor/i.test(tl); s=real?100:0; if(acc) s-=90; }
     else { s=0; }
