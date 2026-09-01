@@ -719,14 +719,8 @@ function applyAll(){
 
   // 3) re-renderiza o grid só com os visíveis (na ordem)
   const grid=document.getElementById("allGrid");
-  grid.innerHTML = visiveis.map(o=>
-    '<div class="card">'
-    + (o.i ? '<img class="pimg" src="'+o.i+'" alt="" loading="lazy" onerror="this.style.display=\'none\'">'
-           : '<div class="pimg ph">🖥️</div>')
-    + '<div class="t" title="'+o.t.replace(/"/g,"&quot;")+'">'+o.t+'</div>'
-    + '<div class="s">'+o.s+'</div>'
-    + '<div class="price">R$ '+o.p.toFixed(2).replace(".",",")+'</div>'
-    + '<a class="go" href="'+o.u+'" target="_blank" rel="nofollow noopener sponsored">Ver oferta</a></div>').join("");
+  grid.innerHTML="";
+  visiveis.forEach(o=> grid.appendChild(card(o)));
 
   document.getElementById("visCount").textContent=visiveis.length;
   document.getElementById("nores").style.display=visiveis.length?"none":"block";
@@ -835,11 +829,7 @@ function openCatPage(cat){
   document.getElementById("resultsPage").innerHTML=`<div class="allpage"><div class="side"><h3>Preço</h3><div class="range-wrap"><div class="range-bar"><div class="range-fill" id="rangeFill"></div></div><input type="range" id="priceMin" class="prange" min="${Math.floor(min)}" max="${Math.ceil(max)}" value="${Math.floor(min)}" step="1"><input type="range" id="priceMax" class="prange" min="${Math.floor(min)}" max="${Math.ceil(max)}" value="${Math.ceil(max)}" step="1"></div><div class="range-vals"><span id="pMinLbl"></span><span id="pMaxLbl"></span></div><h3>Loja</h3><div id="fLoja">${lojas.map(l=>`<label><input type="checkbox" class="f-loja" value="${l}"> ${l}</label>`).join("")}</div><h3>Marca</h3><div id="fMarca">${marcas.map(m=>`<label><input type="checkbox" class="f-marca" value="${m}"> ${m.charAt(0).toUpperCase()+m.slice(1)}</label>`).join("")}</div><h3>Categoria</h3><div id="fCat">${cats.map(c=>`<label><input type="checkbox" class="f-cat" value="${c}"> ${c.charAt(0).toUpperCase()+c.slice(1)}</label>`).join("")}</div><h3>Condição</h3><div id="fCond">${conds.map(c=>`<label><input type="checkbox" class="f-cond" value="${c}"> ${c==="novo"?"Novo":c==="usado"?"Usado":"Seminovo/Open-box"}</label>`).join("")}</div>${keywords.length?`<h3>Palavras-chave</h3><div id="fKw">${keywords.map(k=>`<label><input type="checkbox" class="f-kw" value="${k}"> ${k.charAt(0).toUpperCase()+k.slice(1)}</label>`).join("")}</div>`:""}<button class="clear" onclick="resetF()">Limpar filtros</button><button class="clear" onclick="closeAll()">← Voltar</button></div><div class="mainall"><h1 style="margin:0 0 4px">${title}</h1><p class="sub" style="margin:0 0 10px">${rows.length} ofertas em ${title}</p><div style="display:flex;justify-content:flex-end;margin:-8px 0 10px"><div style="display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:6px 10px"><span style="font-size:12px;color:var(--dim)">Ordenar por</span><select id="sortSel" style="width:auto;padding:4px 8px;background:transparent;border:none;color:var(--text);font-size:13px;font-weight:600;outline:none"><option value="relevancia">⭐ Mais relevantes</option><option value="price_asc">Menor preço</option><option value="price_desc">Maior preço</option><option value="best">🔥 Mais vendidos</option><option value="az">Nome (A–Z)</option><option value="za">Nome (Z–A)</option><option value="loja">Loja (A–Z)</option></select></div></div><div id="top3Wrap" style="margin:0 0 20px"><h3 style="font-size:15px;color:var(--gold);margin:0 0 10px;text-align:center">🏆 Top 3 Menores Preços — ${title}</h3><div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px" id="top3Grid"></div></div><p class="sub"><span id="visCount"></span> visíveis</p><div class="grid" id="allGrid"></div><p class="nores" id="nores">Nenhuma oferta com esses filtros.</p></div></div>`;
   document.getElementById("homePage").style.display="none"; document.getElementById("resultsPage").style.display="block";
   const allGrid=document.getElementById("allGrid");
-  allGrid.innerHTML=rows.map(o=> {
-    const isCmp=(window._cmp||[]).some(x=>x.u===o.u);
-    const pid=o.id?'/p/'+o.id+'.html':'#';
-    return '<div class="card">'+(o.i?'<img class="pimg" src="'+o.i+'" alt="" loading="lazy" onerror="this.style.display=\'none\'">':'<div class="pimg ph">🖥️</div>')+'<div class="t" title="'+o.t.replace(/"/g,"&quot;")+'">'+o.t+'</div><div class="s">'+o.s+'</div><div class="price">R$ '+o.p.toFixed(2).replace(".",",")+'</div><a class="go" href="'+o.u+'" target="_blank" rel="nofollow noopener sponsored">Ver oferta</a><button class="cmp-btn'+(isCmp?' on':'')+'" onclick="toggleCmp(\''+o.u.replace(/'/g,"\\'")+'\')">'+(isCmp?'✓ Comparando':'⇄ Comparar')+'</button></div>';
-  }).join("");
+  allGrid.innerHTML=""; rows.forEach(o=> allGrid.appendChild(card(o)));
   const t3=document.getElementById("top3Grid"); t3.innerHTML=""; rows.slice(0,3).forEach((o,i)=>{ const medals=["TOP 1","TOP 2","TOP 3"]; const c=card(o,medals[i]); t3.appendChild(c); });
   window.__allPageRows=rows;
   document.querySelectorAll("#resultsPage .side input").forEach(i=>i.addEventListener("change",applyAll));
