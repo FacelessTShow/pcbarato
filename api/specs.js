@@ -26,21 +26,9 @@ export default async function handler(req, res) {
 
     const specs = {};
 
-    // try __NEXT_DATA__ (Kabum/Pichau Next.js)
-    const nextMatch = html.match(/<script id="__NEXT_DATA__"[^>]*>([\s\S]*?)<\/script>/);
-    if (nextMatch) {
-      try {
-        const j = JSON.parse(nextMatch[1]);
-        const str = JSON.stringify(j);
-        // extract ficha tecnica from JSON string via regex fallback
-        // look for key/value like "Memória" "8GB"
-      } catch {}
-    }
-
-    // generic table parsing: <th>Label</th><td>Value</td>  or  <dt> <dd>  or  <li><strong>Label:</strong> Value
     const pairs = [];
 
-    // th/td
+    // th/td - Pichau usa <th class="name-field"> com <td class="value-field"> e quebra de linha
     for (const m of html.matchAll(/<th[^>]*>([^<]{1,80})<\/th>\s*<td[^>]*>([\s\S]*?)<\/td>/gi)) {
       const k = m[1].replace(/<[^>]+>/g, "").replace(/&nbsp;|&amp;/g, " ").trim().replace(/:$/, "");
       const v = m[2].replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim().slice(0, 200);
