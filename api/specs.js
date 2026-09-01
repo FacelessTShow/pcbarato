@@ -15,13 +15,21 @@ export default async function handler(req, res) {
   try {
     const r = await fetch(url, {
       headers: {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/131.0.0.0 Safari/537.36",
-        "Accept": "text/html,application/xhtml+xml",
-        "Accept-Language": "pt-BR,pt;q=0.9",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        "Accept-Language": "pt-BR,pt;q=0.9,en;q=0.8",
+        "Referer": "https://www.pichau.com.br/",
+        "Sec-Fetch-Site": "same-origin",
+        "Sec-Fetch-Mode": "navigate",
+        "Cache-Control": "no-cache",
       },
       redirect: "follow",
     });
-    if (!r.ok) return res.status(502).json({ error: "fetch failed " + r.status });
+    if (!r.ok) {
+      // 403 = Cloudflare bloqueou IP da Vercel -> retorna vazio sem erro pra não quebrar modal (usa specs do título)
+      if (r.status === 403) return res.status(200).json({ specs: {}, note: "blocked 403, use title parse" });
+      return res.status(502).json({ error: "fetch failed " + r.status });
+    }
     const html = await r.text();
 
     const specs = {};

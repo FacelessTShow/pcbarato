@@ -1063,7 +1063,7 @@ function openCmp(){
         });
       }
     });
-    if(!changed){ const n=document.getElementById("cmpNote"); if(n) n.textContent="Specs extraídas do título — ficha técnica não encontrada na página."; return; }
+    if(!changed){ const n=document.getElementById("cmpNote"); if(n) n.textContent="Specs do título — detalhe completo bloqueado pela loja (IP da Vercel), mas VRAM/GDDR6/etc já estão acima."; return; }
     const all2=[...new Set(specMaps.flatMap(s=>Object.keys(s)))];
     all2.sort((a,b)=> (order.indexOf(a)===-1?999:order.indexOf(a)) - (order.indexOf(b)===-1?999:order.indexOf(b)));
     const specRows2=all2.map(lb=> `<tr><th>${lb}</th>${specMaps.map(s=>`<td>${(s[lb]||"—")}</td>`).join("")}</tr>`).join("");
