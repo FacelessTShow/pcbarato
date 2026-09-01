@@ -964,13 +964,78 @@ function renderCmpBar(){
   const btn=document.getElementById("cmpGo"); if(btn) btn.disabled=window._cmp.length<2;
 }
 function clearCmp(){ window._cmp=[]; localStorage.setItem("_cmp","[]"); renderCmpBar(); document.querySelectorAll(".cmp-btn").forEach(b=>{b.classList.remove("on"); b.textContent="⇄ Comparar"}); }
+// specs por categoria (parse do titulo)
+function cmpSpecs(o){
+  const t=o.t||""; const tl=t.toLowerCase(); const g=(re)=>{const m=t.match(re);return m?m[0].trim():"";};
+  const cap=(re)=>{const m=t.match(re);return m?(m[1]||m[0]).trim():"";};
+  const cat=o._cat|| (/(rtx|gtx|radeon rx|geforce|arc a\d)/i.test(t)?"gpu":/(ryzen|core i[3579]|processador)/i.test(t)?"cpu":/placa m[ãa]e/i.test(t)?"placa-mae":/(mem[óo]ria|ddr[45])/i.test(t)?"ram":/\bssd\b|nvme|\bm\.2\b/i.test(t)?"ssd":/\bhdd\b|hd interno/i.test(t)?"hdd":/fonte\s*\d+\s*w|80\s*plus|psu/i.test(t)?"fonte":/\bgabinete\b/i.test(t)?"gabinete":/\bmonitor\b/i.test(t)?"monitor":/\bteclado\b/i.test(t)?"teclado":/\bmouse\b(?!pad)/i.test(t)?"mouse":/headset|fone de ouvido|headphone/i.test(t)?"headset":/\bcadeira\b/i.test(t)?"cadeira":/\bnotebook\b/i.test(t)?"notebook":"outros");
+  const marca = cap(/(msi|gigabyte|asus|asrock|zotac|inno3d|galax|gainward|pny|colorful|powercolor|sapphire|corsair|kingston|xpg|adata|crucial|sandisk|\bwd\b|seagate|evga|logitech|redragon|hyperx|razer|multilaser|rise mode|noctua|deepcool|thermalright|mancer|hiksemi|cooler master|montech|ocypus|amd|intel|azza|aigo|picsil)/i) || "—";
+  const modelo = g(/(rtx\s*\d{3,4}\s*(?:ti|super|xt)?|gtx\s*\d{3,4}\s*(?:ti|super)?|radeon\s*rx\s*\d{3,4}\s*(?:xt)?|arc\s*a\d{3}|ryzen\s*\d\s*\d{4}[a-z]*|core\s*i[3579][\s-]*\d{4,5}[a-z]*)/i) || "—";
+  const out={};
+  out["Marca"]=marca.charAt(0).toUpperCase()+marca.slice(1).toLowerCase();
+  if(modelo!=="—") out["Modelo"]=modelo.toUpperCase();
+  if(cat==="gpu"){
+    const vram=cap(/(\d{1,2}\s*gb)\s*(gddr6x|gddr6|gddr5)?/i); if(vram) out["VRAM"]=vram.toUpperCase();
+    const memType=cap(/(gddr6x|gddr6|gddr5)/i); if(memType && !out["VRAM"]?.toLowerCase().includes(memType.toLowerCase())) out["Memória"]=memType.toUpperCase();
+    const clk=cap(/(\d{3,4}\s*mhz)/i); if(clk) out["Clock"]=clk;
+    const bus=cap(/(\d{1,3}\s*bit)/i); if(bus) out["Barramento"]=bus;
+  } else if(cat==="cpu"){
+    const freq=cap(/(\d[.,]\d\s*ghz)/i); if(freq) out["Frequência"]=freq;
+    const sock=cap(/(am4|am5|lga\s*1700|lga\s*1200|lga\s*1151)/i); if(sock) out["Socket"]=sock.toUpperCase();
+    const cores=cap(/(\d+\s*n[úu]cleos?)/i); if(cores) out["Núcleos"]=cores;
+  } else if(cat==="ram"){
+    const capGb=cap(/(\d{1,3}\s*gb)/i); if(capGb) out["Capacidade"]=capGb;
+    const ddr=cap(/(ddr[45])/i); if(ddr) out["Tipo"]=ddr.toUpperCase();
+    const mhz=cap(/(\d{3,4}\s*mhz)/i); if(mhz) out["Frequência"]=mhz;
+    const kit=cap(/(kit\s*\d+x\s*\d+gb|\d+x\s*\d+gb)/i); if(kit) out["Kit"]=kit;
+  } else if(cat==="ssd"||cat==="hdd"){
+    const capSt=cap(/(\d+(?:\.\d+)?\s*(?:gb|tb))/i); if(capSt) out["Capacidade"]=capSt.toUpperCase();
+    const iface=cap(/(nvme|sata|m\.2|2\.5"|3\.5")/i); if(iface) out["Interface"]=iface.toUpperCase();
+    const leitura=cap(/(\d{3,4}\s*mb\/s)/i); if(leitura) out["Leitura"]=leitura;
+  } else if(cat==="fonte"){
+    const w=cap(/(\d{3,4}\s*w)/i); if(w) out["Potência"]=w.toUpperCase();
+    const plus=cap(/(80\s*plus(?:\s*bronze|\s*gold|\s*silver)?)/i); if(plus) out["Certificação"]=plus;
+    const mod=cap(/(modular|semi-modular)/i); if(mod) out["Modular"]=mod;
+  } else if(cat==="monitor"){
+    const pol=cap(/(\d{2}(?:\.\d)?\s*(?:\"|polegadas))/i); if(pol) out["Tamanho"]=pol;
+    const hz=cap(/(\d{2,3}\s*hz)/i); if(hz) out["Taxa"]=hz;
+    const res=cap(/(4k|full hd|fhd|qhd|1440p|1080p|\d{3,4}x\d{3,4})/i); if(res) out["Resolução"]=res.toUpperCase();
+    const painel=cap(/(ips|va|tn|oled)/i); if(painel) out["Painel"]=painel.toUpperCase();
+  } else if(cat==="teclado"){
+    const tipo=cap(/(mec[âa]nico|membrana|sem fio|wireless|bluetooth)/i); if(tipo) out["Tipo"]=tipo;
+    const sw=cap(/(switch\s*\w+|blue|red|brown|black)\s*switch/i); if(sw) out["Switch"]=sw;
+    const abnt=cap(/(abnt2?)/i); if(abnt) out["Layout"]=abnt.toUpperCase();
+  } else if(cat==="mouse"){
+    const dpi=cap(/(\d{3,5}\s*dpi)/i); if(dpi) out["DPI"]=dpi.toUpperCase();
+    const tipo2=cap(/(sem fio|wireless|bluetooth|com fio)/i); if(tipo2) out["Conexão"]=tipo2;
+    const sensor=cap(/(sensor\s*\w+)/i); if(sensor) out["Sensor"]=sensor;
+  } else if(cat==="headset"){
+    const tipo3=cap(/(sem fio|wireless|bluetooth|com fio|usb|p2)/i); if(tipo3) out["Conexão"]=tipo3;
+    const driver=cap(/(\d{2,3}\s*mm)/i); if(driver) out["Driver"]=driver;
+  } else if(cat==="notebook"){
+    const tela=cap(/(\d{2}(?:\.\d)?\s*(?:\"|polegadas))/i); if(tela) out["Tela"]=tela;
+    const proc=cap(/(ryzen\s*\d\s*\d{4}|core\s*i[3579][\s-]*\d{4,5})/i); if(proc) out["Processador"]=proc;
+    const ram2=cap(/(\d{1,2}\s*gb\s*ram)/i); if(ram2) out["RAM"]=ram2.toUpperCase();
+    const stor=cap(/(\d{3,4}\s*gb\s*ssd|\d+\s*tb)/i); if(stor) out["Armazenamento"]=stor.toUpperCase();
+  } else if(cat==="gabinete"){
+    const ff=cap(/(mid tower|full tower|mini tower|atx|m-atx)/i); if(ff) out["Formato"]=ff.toUpperCase();
+  }
+  out["Condição"]=/seminovo|semi-novo|open ?box/i.test(t)?"Seminovo":/usado/i.test(t)?"Usado":"Novo";
+  return out;
+}
 function openCmp(){
   if(window._cmp.length<2){ alert("Selecione pelo menos 2 produtos"); return; }
   const m=document.getElementById("cmpModal");
   const box=document.getElementById("cmpBox");
   const rows=window._cmp;
   const cheapest=Math.min(...rows.map(r=>r.p));
-  box.innerHTML=`<button class="close" onclick="closeCmp()">✕ Fechar</button><h3 style="margin:0 0 12px">⇄ Comparando ${rows.length} produtos</h3><table><tr><th></th>${rows.map(o=>`<th><img src="${o.i||''}" style="width:80px;height:80px;object-fit:contain;background:#fff;border-radius:8px;display:block;margin-bottom:6px" onerror="this.style.display='none'"><div style="font-size:12px;line-height:1.3">${o.t.slice(0,60)}</div></th>`).join("")}</tr><tr><th>Preço</th>${rows.map(o=>`<td class="price">${o.p===cheapest?'🏆 ':''}R$ ${o.p.toFixed(2).replace(".",",")}${o.p===cheapest?' <span style="color:var(--gold);font-size:11px">MENOR</span>':''}</td>`).join("")}</tr><tr><th>Loja</th>${rows.map(o=>`<td>${o.s}</td>`).join("")}</tr><tr><th></th>${rows.map(o=>`<td><a href="${o.u}" target="_blank" style="background:var(--accent);color:#04121a;padding:7px 12px;border-radius:8px;text-decoration:none;font-weight:700;font-size:12px;display:inline-block">Ver oferta</a></td>`).join("")}</tr></table><p style="margin-top:10px;color:var(--dim);font-size:11px">Dica: clique em ✕ nos thumbnails da barra pra remover.</p>`;
+  const specMaps=rows.map(cmpSpecs);
+  const allLabels=[...new Set(specMaps.flatMap(s=>Object.keys(s)))];
+  // ordem preferida
+  const order=["Marca","Modelo","VRAM","Memória","Clock","Barramento","Capacidade","Tipo","Frequência","Kit","Interface","Leitura","Potência","Certificação","Modular","Tamanho","Taxa","Resolução","Painel","Formato","Tipo","Switch","Layout","DPI","Conexão","Sensor","Driver","Tela","Processador","RAM","Armazenamento","Condição"];
+  allLabels.sort((a,b)=> (order.indexOf(a)===-1?999:order.indexOf(a)) - (order.indexOf(b)===-1?999:order.indexOf(b)));
+  const specRows=allLabels.map(lb=> `<tr><th>${lb}</th>${specMaps.map(s=>`<td>${(s[lb]||"—")}</td>`).join("")}</tr>`).join("");
+  box.innerHTML=`<button class="close" onclick="closeCmp()">✕ Fechar</button><h3 style="margin:0 0 12px">⇄ Comparando ${rows.length} produtos</h3><table><tr><th></th>${rows.map(o=>`<th><img src="${o.i||''}" style="width:80px;height:80px;object-fit:contain;background:#fff;border-radius:8px;display:block;margin-bottom:6px" onerror="this.style.display='none'"><div style="font-size:12px;line-height:1.3">${o.t.slice(0,60)}</div></th>`).join("")}</tr><tr><th>Preço</th>${rows.map(o=>`<td class="price">${o.p===cheapest?'🏆 ':''}R$ ${o.p.toFixed(2).replace(".",",")}${o.p===cheapest?' <span style="color:var(--gold);font-size:11px">MENOR</span>':''}</td>`).join("")}</tr><tr><th>Loja</th>${rows.map(o=>`<td>${o.s}</td>`).join("")}</tr>${specRows}<tr><th></th>${rows.map(o=>`<td><a href="${o.u}" target="_blank" style="background:var(--accent);color:#04121a;padding:7px 12px;border-radius:8px;text-decoration:none;font-weight:700;font-size:12px;display:inline-block">Ver oferta</a></td>`).join("")}</tr></table><p style="margin-top:10px;color:var(--dim);font-size:11px">Specs extraídas do título — valores com “—” não constam no anúncio.</p>`;
   m.classList.add("on");
 }
 function closeCmp(){ document.getElementById("cmpModal").classList.remove("on"); }
