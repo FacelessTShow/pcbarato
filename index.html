@@ -964,8 +964,25 @@ function renderCmpBar(){
   const btn=document.getElementById("cmpGo"); if(btn) btn.disabled=window._cmp.length<2;
 }
 function clearCmp(){ window._cmp=[]; localStorage.setItem("_cmp","[]"); renderCmpBar(); document.querySelectorAll(".cmp-btn").forEach(b=>{b.classList.remove("on"); b.textContent="⇄ Comparar"}); }
-// specs por categoria (parse do titulo)
+// specs por categoria (parse do titulo) + specs reais embutidos
 function cmpSpecs(o){
+  if(o.specs && Object.keys(o.specs).length){
+    // usa ficha embutida direto
+    const out={};
+    // Marca/Modelo primeiro se existir na ficha
+    if(o.specs["Marca"]) out["Marca"]=o.specs["Marca"];
+    if(o.specs["Modelo"]) out["Modelo"]=o.specs["Modelo"];
+    for(const [k,v] of Object.entries(o.specs)){
+      if(k==="Marca"||k==="Modelo") continue;
+      if(v) out[k]=String(v).slice(0,80);
+    }
+    if(!out["Marca"]){
+      const t=o.t||""; const m=t.match(/(msi|gigabyte|asus|asrock|zotac|inno3d|galax|gainward|pny|colorful|powercolor|sapphire|corsair|kingston|xpg|adata|crucial|sandisk|\bwd\b|seagate|evga|logitech|redragon|hyperx|razer|multilaser|rise mode|noctua|deepcool|thermalright|mancer|hiksemi|cooler master|montech|ocypus|amd|intel|azza|aigo|picsil|xfx|biostar|palit)/i);
+      const marca=m?m[0]:"—"; out["Marca"]=marca==="—"?"—":marca.charAt(0).toUpperCase()+marca.slice(1).toLowerCase();
+    }
+    out["Condição"]=/seminovo|semi-novo|open ?box/i.test(o.t)?"Seminovo":/usado/i.test(o.t)?"Usado":"Novo";
+    return out;
+  }
   const t=o.t||""; const tl=t.toLowerCase(); const g=(re)=>{const m=t.match(re);return m?m[0].trim():"";};
   const cap=(re)=>{const m=t.match(re);return m?(m[1]||m[0]).trim():"";};
   const cat=o._cat|| (/(rtx|gtx|radeon rx|geforce|arc a\d)/i.test(t)?"gpu":/(ryzen|core i[3579]|processador)/i.test(t)?"cpu":/placa m[ãa]e/i.test(t)?"placa-mae":/(mem[óo]ria|ddr[45])/i.test(t)?"ram":/\bssd\b|nvme|\bm\.2\b/i.test(t)?"ssd":/\bhdd\b|hd interno/i.test(t)?"hdd":/fonte\s*\d+\s*w|80\s*plus|psu/i.test(t)?"fonte":/\bgabinete\b/i.test(t)?"gabinete":/\bmonitor\b/i.test(t)?"monitor":/\bteclado\b/i.test(t)?"teclado":/\bmouse\b(?!pad)/i.test(t)?"mouse":/headset|fone de ouvido|headphone/i.test(t)?"headset":/\bcadeira\b/i.test(t)?"cadeira":/\bnotebook\b/i.test(t)?"notebook":"outros");
@@ -1034,8 +1051,13 @@ function openCmp(){
   const order=["Marca","Modelo","VRAM","Memória","Clock","Barramento","Capacidade","Tipo","Frequência","Kit","Interface","Leitura","Potência","Certificação","Modular","Tamanho","Taxa","Resolução","Painel","Formato","Tipo","Switch","Layout","DPI","Conexão","Sensor","Driver","Tela","Processador","RAM","Armazenamento","Condição"];
   allLabels.sort((a,b)=> (order.indexOf(a)===-1?999:order.indexOf(a)) - (order.indexOf(b)===-1?999:order.indexOf(b)));
   const specRows0=allLabels.map(lb=> `<tr><th>${lb}</th>${specMaps.map(s=>`<td>${(s[lb]||"—")}</td>`).join("")}</tr>`).join("");
+  const hasReal=rows.some(o=>o.specs && Object.keys(o.specs).length);
   const header=`<button class="close" onclick="closeCmp()">✕ Fechar</button><h3 style="margin:0 0 12px">⇄ Comparando ${rows.length} produtos</h3><table><tr><th></th>${rows.map(o=>`<th><img src="${o.i||''}" style="width:80px;height:80px;object-fit:contain;background:#fff;border-radius:8px;display:block;margin-bottom:6px" onerror="this.style.display='none'"><div style="font-size:12px;line-height:1.3">${o.t.slice(0,60)}</div></th>`).join("")}</tr><tr><th>Preço</th>${rows.map(o=>`<td class="price">${o.p===cheapest?'🏆 ':''}R$ ${o.p.toFixed(2).replace(".",",")}${o.p===cheapest?' <span style="color:var(--gold);font-size:11px">MENOR</span>':''}</td>`).join("")}</tr><tr><th>Loja</th>${rows.map(o=>`<td>${o.s}</td>`).join("")}</tr>`;
   const footer=`<tr><th></th>${rows.map(o=>`<td><a href="${o.u}" target="_blank" style="background:var(--accent);color:#04121a;padding:7px 12px;border-radius:8px;text-decoration:none;font-weight:700;font-size:12px;display:inline-block">Ver oferta</a></td>`).join("")}</tr></table>`;
+  if(hasReal){
+    box.innerHTML=header+specRows0+footer+`<p style="margin-top:10px;color:var(--dim);font-size:11px">Ficha técnica embutida (do site da loja) — “—” = não informado.</p>`;
+    m.classList.add("on"); return;
+  }
   box.innerHTML=header+specRows0+footer+`<p id="cmpNote" style="margin-top:10px;color:var(--dim);font-size:11px">Specs do título — buscando ficha técnica real… ⏳</p>`;
   m.classList.add("on");
   // busca specs reais sob demanda (cache 24h no edge)
