@@ -1031,12 +1031,44 @@ function openCmp(){
   const cheapest=Math.min(...rows.map(r=>r.p));
   const specMaps=rows.map(cmpSpecs);
   const allLabels=[...new Set(specMaps.flatMap(s=>Object.keys(s)))];
-  // ordem preferida
   const order=["Marca","Modelo","VRAM","Memória","Clock","Barramento","Capacidade","Tipo","Frequência","Kit","Interface","Leitura","Potência","Certificação","Modular","Tamanho","Taxa","Resolução","Painel","Formato","Tipo","Switch","Layout","DPI","Conexão","Sensor","Driver","Tela","Processador","RAM","Armazenamento","Condição"];
   allLabels.sort((a,b)=> (order.indexOf(a)===-1?999:order.indexOf(a)) - (order.indexOf(b)===-1?999:order.indexOf(b)));
-  const specRows=allLabels.map(lb=> `<tr><th>${lb}</th>${specMaps.map(s=>`<td>${(s[lb]||"—")}</td>`).join("")}</tr>`).join("");
-  box.innerHTML=`<button class="close" onclick="closeCmp()">✕ Fechar</button><h3 style="margin:0 0 12px">⇄ Comparando ${rows.length} produtos</h3><table><tr><th></th>${rows.map(o=>`<th><img src="${o.i||''}" style="width:80px;height:80px;object-fit:contain;background:#fff;border-radius:8px;display:block;margin-bottom:6px" onerror="this.style.display='none'"><div style="font-size:12px;line-height:1.3">${o.t.slice(0,60)}</div></th>`).join("")}</tr><tr><th>Preço</th>${rows.map(o=>`<td class="price">${o.p===cheapest?'🏆 ':''}R$ ${o.p.toFixed(2).replace(".",",")}${o.p===cheapest?' <span style="color:var(--gold);font-size:11px">MENOR</span>':''}</td>`).join("")}</tr><tr><th>Loja</th>${rows.map(o=>`<td>${o.s}</td>`).join("")}</tr>${specRows}<tr><th></th>${rows.map(o=>`<td><a href="${o.u}" target="_blank" style="background:var(--accent);color:#04121a;padding:7px 12px;border-radius:8px;text-decoration:none;font-weight:700;font-size:12px;display:inline-block">Ver oferta</a></td>`).join("")}</tr></table><p style="margin-top:10px;color:var(--dim);font-size:11px">Specs extraídas do título — valores com “—” não constam no anúncio.</p>`;
+  const specRows0=allLabels.map(lb=> `<tr><th>${lb}</th>${specMaps.map(s=>`<td>${(s[lb]||"—")}</td>`).join("")}</tr>`).join("");
+  const header=`<button class="close" onclick="closeCmp()">✕ Fechar</button><h3 style="margin:0 0 12px">⇄ Comparando ${rows.length} produtos</h3><table><tr><th></th>${rows.map(o=>`<th><img src="${o.i||''}" style="width:80px;height:80px;object-fit:contain;background:#fff;border-radius:8px;display:block;margin-bottom:6px" onerror="this.style.display='none'"><div style="font-size:12px;line-height:1.3">${o.t.slice(0,60)}</div></th>`).join("")}</tr><tr><th>Preço</th>${rows.map(o=>`<td class="price">${o.p===cheapest?'🏆 ':''}R$ ${o.p.toFixed(2).replace(".",",")}${o.p===cheapest?' <span style="color:var(--gold);font-size:11px">MENOR</span>':''}</td>`).join("")}</tr><tr><th>Loja</th>${rows.map(o=>`<td>${o.s}</td>`).join("")}</tr>`;
+  const footer=`<tr><th></th>${rows.map(o=>`<td><a href="${o.u}" target="_blank" style="background:var(--accent);color:#04121a;padding:7px 12px;border-radius:8px;text-decoration:none;font-weight:700;font-size:12px;display:inline-block">Ver oferta</a></td>`).join("")}</tr></table>`;
+  box.innerHTML=header+specRows0+footer+`<p id="cmpNote" style="margin-top:10px;color:var(--dim);font-size:11px">Specs do título — buscando ficha técnica real… ⏳</p>`;
   m.classList.add("on");
+  // busca specs reais sob demanda (cache 24h no edge)
+  const realUrls=rows.map(o=>{
+    try{
+      const u=o.u||"";
+      if(u.includes("awin1.com")){
+        const q=new URL(u).searchParams.get("ued");
+        if(q) return decodeURIComponent(q);
+      }
+      return u;
+    }catch{ return o.u; }
+  });
+  Promise.all(realUrls.map(u=> fetch("/api/specs?url="+encodeURIComponent(u)).then(r=>r.json()).catch(()=>({specs:{}})) )).then(results=>{
+    let changed=false;
+    results.forEach((res,i)=>{
+      if(res && res.specs && Object.keys(res.specs).length){
+        // merge: real specs override / add
+        Object.entries(res.specs).forEach(([k,v])=>{
+          const kk=k.length>40?k.slice(0,40):k;
+          if(v && v.length>1){
+            specMaps[i][kk]=v.slice(0,80);
+            changed=true;
+          }
+        });
+      }
+    });
+    if(!changed){ const n=document.getElementById("cmpNote"); if(n) n.textContent="Specs extraídas do título — ficha técnica não encontrada na página."; return; }
+    const all2=[...new Set(specMaps.flatMap(s=>Object.keys(s)))];
+    all2.sort((a,b)=> (order.indexOf(a)===-1?999:order.indexOf(a)) - (order.indexOf(b)===-1?999:order.indexOf(b)));
+    const specRows2=all2.map(lb=> `<tr><th>${lb}</th>${specMaps.map(s=>`<td>${(s[lb]||"—")}</td>`).join("")}</tr>`).join("");
+    box.innerHTML=header+specRows2+footer+`<p style="margin-top:10px;color:var(--dim);font-size:11px">Ficha técnica da página do produto (cache 24h) — “—” = não informado.</p>`;
+  });
 }
 function closeCmp(){ document.getElementById("cmpModal").classList.remove("on"); }
 // restaura _cmp de URLs salvas
